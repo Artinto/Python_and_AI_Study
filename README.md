@@ -1,6 +1,6 @@
 # 📚 Python & AI 스터디
 
-- [스터디 신청](#스터디-신청)
+- [스터디 신청](#스터디-신청-모집-기간-20210110일)
 - [스터디 소개 및 목표](#스터디-소개-및-목표)
 - [지원자격 및 모집대상](#스터디-지원자격-및-모집대상)
 - [스터디 기간](#스터디-기간)
@@ -102,11 +102,37 @@
    - 스터디 요일 및 시간 확정
    - Github 사용법 짧은 강의 진행
    - python 기초 코딩문제(3문제) 함께 풀기 
-   
+    
 - **과제 공지**
-   - python 코딩문제
+
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [HackerRank] Introduction (4문제) 
+      -	Arithmetic Operators
+      -	Python: Division
+      -	Write a function
+      -	Print Function
+      
+   - Basic Data Types (3문제)
+      -	Find the Runner-Up Score!
+      -	Finding the percentage
+      -	Lists
+   
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary>
+
+   - [백준] 입출력과 사칙연산
+   
+   </details>
 
 <br>
+
+
+
+
 
 ### 2주차: python 기초 1
 - **스터디 진행**
@@ -114,9 +140,33 @@
    (작성한 코드를 서로 공유하며, 모르는 부분 궁금한 부분에 대해 서로 질문)
    
 - **과제 공지**
-   - python 코딩문제
+
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [HackerRank] Basic Data Types (2문제)
+      -	List Comprehensions
+      -	Nested Lists
+      
+   - [HackerRank] Numpy (8문제) [*참고*](http://pythonstudy.xyz/python/article/402-numpy-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)
+      -	Sum and Prod
+      -	Min and Max
+      - ...
+   
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary>
+
+   - [백준] if문
+   - [백준] for문
+   
+   </details>
 
 <br>
+
+
+
 
 ### 3주차: python 기초 2
 - **스터디 진행**
@@ -124,9 +174,29 @@
    (작성한 코드를 서로 공유하며, 모르는 부분 궁금한 부분에 대해 서로 질문)
    
 - **과제 공지**
-   - python 코딩문제
+
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [HackerRank] Classes (2문제)
+      -	Classes: Dealing with Complex Numbers
+      -	Class 2 - Find the Torsional Angle
+
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary>
+
+   - [백준] 1차원 배열
+   - [백준] 함수
+   
+   </details>
 
 <br>
+
+
+
+
 
 ### 4주차: python 기초 3
 - **스터디 진행**
@@ -134,26 +204,66 @@
    (작성한 코드를 서로 공유하며, 모르는 부분 궁금한 부분에 대해 서로 질문)
    
 - **과제 공지**
-   - 1~2강 유튜브 강의 시청
-   - 예제 코드에 주석 달기
 
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 1~2강 유튜브 강의 시청
+      > -	1강: Overview
+      > -	2강: Linear Model
+   
+   -  예제 코드에 주석 달기 - [*01_basics.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/01_basics.py)
+
+   <br> 
+
+   - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
+      > - [1](https://www.youtube.com/watch?v=qPMeuL2LIqY&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=2), [2](https://www.youtube.com/watch?v=Hax03rCn3UI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=4), [3](https://www.youtube.com/watch?v=TxIVr-nk1so&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=6)강
+   
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary>
+
+   - [백준] Stack
+   
+   </details>
+   
 <br>
+
+
+
 
 ### 5주차: AI
 - **스터디 진행**
    - 1~2강 발표 
-      - 1강: 머신러닝 개념과 용어
-      - 2강: Linear Regression
+      - 1강: Overview
+      - 2강: Linear Model
       
    - 지난 주차 예제 코드 돌아가면서 설명
    
 - **과제 공지**
-   - 3~4강 유튜브 강의 시청
-   - (발표자: 3~4강 발표 준비)
-   - 예제 코드에 주석 달기
 
+   <details>
+   <summary><strong>main HW</strong></summary>
 
+   - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 3~4강 유튜브 강의 시청 (+발표자: 3\~4강 발표 준비)
+      > -	3강: Gradient Descent
+      > -	4강: Back-propagation and Autograd
+   
+   -  예제 코드에 주석 달기 - [*02_manual_gradient.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/02_manual_gradient.py) , [*03_auto_gradient.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/03_auto_gradient.py)
+
+   <br> 
+
+   - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
+      > - [1](https://www.youtube.com/watch?v=qPMeuL2LIqY&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=2), [2](https://www.youtube.com/watch?v=Hax03rCn3UI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=4), [3](https://www.youtube.com/watch?v=TxIVr-nk1so&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=6)강
+      > - [8-2](https://www.youtube.com/watch?v=AByVbUX1PUI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=23), [9-2](https://www.youtube.com/watch?v=573EZkzfnZ0&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=27)강
+   
+   </details>
+   
 <br>
+
+
+
 
 ### 6주차: AI
 - **스터디 진행**
@@ -164,11 +274,27 @@
    - 지난 주차 예제 코드 돌아가면서 설명
    
 - **과제 공지**
-   - 5~6강 유튜브 강의 시청
-   - (발표자: 5~6강 발표 준비)
-   - 예제 코드에 주석 달기
 
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 5~6강 유튜브 강의 시청 (+발표자: 5\~6강 발표 준비)
+      > -   5강: Linear Regression
+      > -   6강: Logistic Regression
+   
+   -  예제 코드에 주석 달기 - [*05_linear_regression.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/05_linear_regression.py) , [*06_logistic_regression.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/06_logistic_regression.py)
+
+   <br> 
+
+   - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
+      > - [1](https://www.youtube.com/watch?v=qPMeuL2LIqY&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=2), [2](https://www.youtube.com/watch?v=Hax03rCn3UI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=4), [3](https://www.youtube.com/watch?v=TxIVr-nk1so&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=6)강
+      > - [5-1](https://www.youtube.com/watch?v=PIjno6paszY&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=11), [5-2](https://www.youtube.com/watch?v=6vzchGYEJBc&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=12)강
+   
+   </details>
+   
 <br>
+
+
 
 
 ### 7주차: AI
@@ -180,10 +306,24 @@
    - 지난 주차 예제 코드 돌아가면서 설명
    
 - **과제 공지**
-   - Linear Regression 코드 작성
 
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [실습] Linear Regression 코드 작성 ([*test-score.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-01-test-score.csv) 이용)
+
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary><br>
+   
+   - [실습] Logistic Regression 코드 작성 ([*diabetes.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-03-diabetes.csv) 이용)
+   
+   </details>
 
 <br>
+
+
 
 
 ### 8주차: AI
@@ -195,7 +335,34 @@
    - (발표자: 7~8강 발표 준비)
    - 예제 코드에 주석 달기
 
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 7~8강 유튜브 강의 시청 (+발표자: 7\~8강 발표 준비)
+      > -   7강: Wide and Deep
+      > -   8강: Pytorch Dataloader
+   
+   -  예제 코드에 주석 달기 - [*07_diabets_logistic.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/07_diabets_logistic.py) , [*08_1_dataset_loader.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/08_1_dataset_loader.py)
+
+   <br> 
+
+   - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
+      > - [7-2](https://www.youtube.com/watch?v=KVv1nMSlPzY&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=19)강  (필수 시청)
+      > - [8-1](https://www.youtube.com/watch?v=n7DNueHGkqE&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=22), [8-2](https://www.youtube.com/watch?v=AByVbUX1PUI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=23), [9-1](https://www.youtube.com/watch?v=GYecDQQwTdI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=25)강
+      
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary><br>
+
+   - [실습] 각자 작성했던 코드를 Wide & Deep하게 만들어보고 Data Loader 부분 코딩해보기
+
+   </details>
+
 <br>
+
+
+
 
 
 ### 9주차: AI
@@ -204,13 +371,37 @@
       - 7강: Wide and Deep
       - 8강: Pytorch Dataloader
    
+   - 지난 주차 예제 코드 돌아가면서 설명
+   
 - **과제 공지**
-   - 9강 유튜브 강의 시청
-   - (발표자: 9강 발표 준비)
-   - 예제 코드에 주석 달기
 
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 9강 유튜브 강의 시청 (+발표자: 9강 발표 준비)
+      > -   9강: Softmax Classifier
+   
+   -  예제 코드에 주석 달기 - [*09_1_softmax_loss.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/09_01_softmax_loss.py) , [*09_2_softmax_mnist.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/09_2_softmax_mnist.py)
+
+   <br> 
+
+   - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
+      > - [6-1](https://www.youtube.com/watch?v=MFAnsx1y9ZI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=14), [6-2](https://www.youtube.com/watch?v=jMU9G5WEtBc&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=15)강 
+      
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary><br>
+
+   - [실습] MNIST 이용해서 softmax classification 적용해보기
+
+   </details>
 
 <br>
+
+
+
+
 
 
 ### 10주차: AI
@@ -218,8 +409,23 @@
    - 9강 발표 & 어려웠던 내용 질문
       - 9강: Softmax Classifier
    
+   - 지난 주차 예제 코드 돌아가면서 설명
+   
 - **과제 공지**
-   - 7~9강 관련 코드 작성
+   
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [실습] 7~9강 관련 코드 작성
+   
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary><br>
+   
+   - [실습] 선택한 코드에 추가로 accuracy 확인을 위한 코드 작성
+   
+   </details>
    
 
 <br>
@@ -230,11 +436,30 @@
    - 각자 작성한 코드 발표
    
 - **과제 공지**
-   - 10강 유튜브 강의 시청
-   - (발표자: 10강 발표 준비)
-   - 예제 코드에 주석 달기
+
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 10강 유튜브 강의 시청 (+발표자: 10강 발표 준비)
+      > -   10강: Basic CNN
+   
+   -  예제 코드에 주석 달기 - [*10_1_cnn_mnist.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/10_1_cnn_mnist.py)
+   
    - 데이터 만들기 (공지 예정)
-    
+
+   <br> 
+
+   - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
+      > - [11-1](https://www.youtube.com/watch?v=Em63mknbtWo&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=35), [11-2](https://www.youtube.com/watch?v=2-75C-yZaoA&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=36)강 
+      
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary><br>
+
+   - [실습] MNIST 이용해서 softmax classification 적용해보기
+
+   </details>
 
 <br>
 
@@ -244,13 +469,37 @@
    - 10강 발표 & 어려웠던 내용 질문
       - 10강: Basic CNN
    
+   - 지난 주차 예제 코드 돌아가면서 설명
+   
 - **과제 공지**
-   - 11강 유튜브 강의 시청
-   - (발표자: 11강 발표 준비)
-   - 예제 코드에 주석 달기
-    
+
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 11강 유튜브 강의 시청 (+발표자: 11강 발표 준비)
+      > -   11강: Advanced CNN
+   
+   -  예제 코드에 주석 달기 - [*11_1_toy_inception_mnist.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/11_1_toy_inception_mnist.py)
+
+   <br> 
+
+   - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
+      > - [11-3](https://www.youtube.com/watch?v=KbNbWTnlYXs&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=37)강 
+      
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary><br>
+
+   - [실습] 의자 데이터([*origin data*](https://github.com/deeplearningzerotoall/PyTorch/tree/master/custom_data))로 데이터 Resize하고, training set, test set으로 나눠보기
+
+   </details>
 
 <br>
+
+
+
+
 
 
 ### 13주차: AI
@@ -258,9 +507,17 @@
    - 11강 발표 & 어려웠던 내용 질문
       - 11강: Advanced CNN
    
+   - 지난 주차 예제 코드 돌아가면서 설명
+   
 - **과제 공지**
-   - 직접 만든 데이터로 CNN 코드 작성
 
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [실습] 직접 만든 데이터로 CNN 코드 작성 (전처리 관련 공지 예정)
+   
+   </details>
+   
 <br>
 
 
@@ -269,11 +526,34 @@
    - 각자 작성한 코드 발표
    
 - **과제 공지**
-   - 12강 유튜브 강의 시청
-   - (발표자: 12강 발표 준비)
-   - 예제 코드에 주석 달기
+
+   <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 12강 유튜브 강의 시청 (+발표자: 12강 발표 준비)
+      > -   12강: RNN 1
    
+   -  예제 코드에 주석 달기 - [*12_1_rnn_basics.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/12_1_rnn_basics.py) , [*12_2_hello_rnn.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/12_2_hello_rnn.py)
+
+   <br> 
+
+   - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
+      > - [12](https://www.youtube.com/watch?v=-SHPG_KMUkQ&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=41)강 
+      
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary><br>
+
+   - [실습] hello 코드를 helloworld로 더 추가해서 완성해보기 + RNN accuracy 측정 추가로 코딩하기 
+
+   </details>
+
 <br>
+
+
+
+
 
 
 ### 15주차: AI
@@ -281,12 +561,40 @@
    - 12강 발표 & 어려웠던 내용 질문
       - 12강: RNN 1
    
+   - 지난 주차 예제 코드 돌아가면서 설명
+   
 - **과제 공지**
    - 13강 유튜브 강의 시청
    - (발표자: 13강 발표 준비)
    - 예제 코드에 주석 달기
+ 
+    <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 13강 유튜브 강의 시청 (+발표자: 13강 발표 준비)
+      > -   13강: RNN 2
+   
+   -  예제 코드에 주석 달기 - [*13_1_rnn_classification_basics.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/13_1_rnn_classification_basics.py) , [*12_2_hello_rnn.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/12_2_hello_rnn.py)
+
+   <br> 
+
+   - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
+      > - [12](https://www.youtube.com/watch?v=-SHPG_KMUkQ&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=41)강 
       
+   </details>
+   
+   <details>
+   <summary><strong>sub HW</strong></summary><br>
+
+   - [실습] RNN LSTM GRU개념공부 [*참고*](https://yjjo.tistory.com/15?category=881892) , [*참고2*](https://wikidocs.net/22886)
+
+   </details>
+ 
 <br>
+
+
+
+
 
 
 ### 16주차: AI
@@ -294,10 +602,21 @@
    - 13강 발표 & 어려웠던 내용 질문
       - 13강: RNN 2
    
+   - 지난 주차 예제 코드 돌아가면서 설명
+   
 - **과제 공지**
-   - RNN 코드 작성
-         
+
+    <details>
+   <summary><strong>main HW</strong></summary>
+
+   - [실습] 주식데이터를 이용한 RNN 코드 작성
+      
+   </details>
+   
 <br>
+
+
+
 
 
 ### 17주차: AI
