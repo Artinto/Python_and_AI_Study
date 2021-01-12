@@ -118,22 +118,22 @@
    <summary><strong>main HW</strong></summary>
 
    - [HackerRank] Introduction (4문제) 
-      -	Arithmetic Operators
-      -	Python: Division
-      -	Write a function
-      -	Print Function
+      -	[Arithmetic Operators](https://www.hackerrank.com/challenges/python-arithmetic-operators/problem)
+      -	[Python: Division](https://www.hackerrank.com/challenges/python-division/problem)
+      -	[Write a function](https://www.hackerrank.com/challenges/write-a-function/problem)
+      -	[Print Function](https://www.hackerrank.com/challenges/python-print/problem)
       
    - Basic Data Types (3문제)
-      -	Find the Runner-Up Score!
-      -	Finding the percentage
-      -	Lists
+      -	[Find the Runner-Up Score!](https://www.hackerrank.com/challenges/find-second-maximum-number-in-a-list/problem)
+      -	[Finding the percentage](https://www.hackerrank.com/challenges/finding-the-percentage/problem)
+      -	[Lists](https://www.hackerrank.com/challenges/python-lists/problem)
    
    </details>
    
    <details>
    <summary><strong>sub HW</strong></summary>
 
-   - [백준] 입출력과 사칙연산
+   - [백준] [입출력과 사칙연산](https://www.acmicpc.net/step/1)
    
    </details>
 
