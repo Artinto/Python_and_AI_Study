@@ -10,5 +10,4 @@ if __name__ == '__main__':
         average =  (add)/3
         student_average [name] = average
     query_name = input()
-    x = student_average[query_name]
     print('%.2f' %student_average[query_name])
