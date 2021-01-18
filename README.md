@@ -170,9 +170,9 @@
       -	Shape and Reshape
       -  Concatenate
       -  Zeros and Ones
-      -  Eye and Identity
-      -  Array Mathematics
-      -  Sum and Prod
+      -  [Eye and Identity](https://www.hackerrank.com/challenges/np-eye-and-identity/problem?h_r=internal-search)
+      -  [Array Mathematics](https://www.hackerrank.com/challenges/np-array-mathematics/problem?h_r=internal-search)
+      -  [Sum and Prod](https://www.hackerrank.com/challenges/np-sum-and-prod/problem?h_r=internal-search)
       -  Min and Max
       -  Dot and Cross
    
@@ -181,8 +181,8 @@
    <details>
    <summary><strong>sub HW</strong></summary>
 
-   - [백준] [if문](https://www.acmicpc.net/step/4)
-   - [백준] [for문](https://www.acmicpc.net/step/3)
+   - [백준] if문
+   - [백준] for문
    
    </details>
 
