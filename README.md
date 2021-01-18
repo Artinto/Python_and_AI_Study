@@ -167,9 +167,14 @@
       -	Nested Lists
       
    - [HackerRank] Numpy (8문제) [*참고*](http://pythonstudy.xyz/python/article/402-numpy-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)
-      -	Sum and Prod
-      -	Min and Max
-      - ...
+      -	Shape and Reshape
+      -  Concatenate
+      -  Zeros and Ones
+      -  Eye and Identity
+      -  Array Mathematics
+      -  Sum and Prod
+      -  Min and Max
+      -  Dot and Cross
    
    </details>
    
