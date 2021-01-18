@@ -161,13 +161,13 @@
 
    <details>
    <summary><strong>main HW</strong></summary>
-
+   
    - [HackerRank] Basic Data Types (2문제)
-      -	List Comprehensions
-      -	Nested Lists
+      -	[List Comprehensions](https://www.hackerrank.com/challenges/list-comprehensions/problem)
+      -	[Nested Lists](https://www.hackerrank.com/challenges/nested-list/problem)
       
    - [HackerRank] Numpy (8문제) [*참고*](http://pythonstudy.xyz/python/article/402-numpy-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)
-      -	Shape and Reshape
+      -	[Shape and Reshape](https://www.hackerrank.com/challenges/np-shape-reshape/problem?h_r=internal-search)
       -  Concatenate
       -  Zeros and Ones
       -  [Eye and Identity](https://www.hackerrank.com/challenges/np-eye-and-identity/problem?h_r=internal-search)
