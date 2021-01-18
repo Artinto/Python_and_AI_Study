@@ -1,4 +1,4 @@
 if __name__ == '__main__':
-    n = int(input())https://github.com/Artinto/Python_and_AI_Study
+    n = int(input())
     for i in range(1,n+1):
         print(i,end='')
