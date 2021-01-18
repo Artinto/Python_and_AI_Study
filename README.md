@@ -181,8 +181,8 @@
    <details>
    <summary><strong>sub HW</strong></summary>
 
-   - [백준] if문
-   - [백준] for문
+   - [백준] [if문](https://www.acmicpc.net/step/4)
+   - [백준] [for문](https://www.acmicpc.net/step/3)
    
    </details>
 
