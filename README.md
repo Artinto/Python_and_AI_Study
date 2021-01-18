@@ -168,8 +168,8 @@
       
    - [HackerRank] Numpy (8문제) [*참고*](http://pythonstudy.xyz/python/article/402-numpy-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)
       -	[Shape and Reshape](https://www.hackerrank.com/challenges/np-shape-reshape/problem?h_r=internal-search)
-      -  Concatenate
-      -  Zeros and Ones
+      -  [Concatenate](https://www.hackerrank.com/challenges/np-concatenate/problem?h_r=internal-search)
+      -  [Zeros and Ones](https://www.hackerrank.com/challenges/np-zeros-and-ones/problem?h_r=internal-search)
       -  [Eye and Identity](https://www.hackerrank.com/challenges/np-eye-and-identity/problem?h_r=internal-search)
       -  [Array Mathematics](https://www.hackerrank.com/challenges/np-array-mathematics/problem?h_r=internal-search)
       -  [Sum and Prod](https://www.hackerrank.com/challenges/np-sum-and-prod/problem?h_r=internal-search)
