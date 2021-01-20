@@ -4,8 +4,6 @@ if __name__ == '__main__':
         name = input()
         score = float(input())
         s.append([name,score])
-    name=[]
-    score=[]
     
     # 정렬을 위해 name과 score 위치 변경
     for i in range(len(s)):
