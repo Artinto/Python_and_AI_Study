@@ -1,6 +1,6 @@
 if __name__ == '__main__':
     
-    n = int(input())
+    m,n = map(int,input().split())
     list1 = []
     list2 = []
     total = []
@@ -34,12 +34,3 @@ if __name__ == '__main__':
                 total.append(int(list1[i]) ** int(list2[i]))
          print(total)
          del total[0:]
-
-    
-           
-    
-    
-
-
-
-
