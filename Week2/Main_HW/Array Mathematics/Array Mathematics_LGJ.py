@@ -2,7 +2,6 @@ import numpy as np
 
 N=[]
 M=[]
-a = np.array([1,2,3,4],float)
 
 n,m=map(int,input().split())
 
