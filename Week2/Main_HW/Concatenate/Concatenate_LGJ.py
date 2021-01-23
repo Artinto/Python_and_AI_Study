@@ -1,13 +1,13 @@
 import numpy
 
 n,m,p = map(int,input().split())
-N=[]
-M=[]
+A=[]
+B=[]
 
 for i in range(0,n):
-    N.append(list(map(int,input().split())))
+    A.append(list(map(int,input().split())))
 
 for i in range(0,m):
-    M.append(list(map(int,input().split())))
+    B.append(list(map(int,input().split())))
 
-print(numpy.concatenate((N,M),axis = 0))
+print(numpy.concatenate((A,B),axis = 0))
