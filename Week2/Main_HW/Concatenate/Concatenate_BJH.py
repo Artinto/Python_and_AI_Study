@@ -6,7 +6,7 @@ list2 = []
 for i in range(n):
     arr=input().split()
     list1.append(arr)
-    print(list1)
+
 for i in range(m):
     arr=input().split()
     list2.append(arr)
