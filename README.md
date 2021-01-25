@@ -202,8 +202,8 @@
    <summary><strong>main HW</strong></summary>
 
    - [HackerRank] Classes (2문제)
-      -	Classes: Dealing with Complex Numbers
-      -	Class 2 - Find the Torsional Angle
+      -	[Classes: Dealing with Complex Numbers](https://www.hackerrank.com/challenges/class-1-dealing-with-complex-numbers/problem)
+      -	[Class 2 - Find the Torsional Angle](https://www.hackerrank.com/challenges/class-2-find-the-torsional-angle/problem)
 
    </details>
    
