@@ -202,6 +202,7 @@
    <summary><strong>main HW</strong></summary>
 
    - [HackerRank] Classes (2문제)
+      - [Class 개념 참고하기](http://pythonstudy.xyz/python/article/19-%ED%81%B4%EB%9E%98%EC%8A%A4)
       -	[Classes: Dealing with Complex Numbers](https://www.hackerrank.com/challenges/class-1-dealing-with-complex-numbers/problem)
       -	[Class 2 - Find the Torsional Angle](https://www.hackerrank.com/challenges/class-2-find-the-torsional-angle/problem)
 
