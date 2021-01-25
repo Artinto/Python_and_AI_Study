@@ -1,14 +1,16 @@
 import numpy
-
-def array(n):
-    arr = []
-    for i in range(int(n)):
-        arr.append(input().split())
-
-    return numpy.array(arr, int)
-
 n, m, p = input().split()
 
-arr_1 = array(n)
-arr_2 = array(m)
-print(numpy.concatenate((arr_1, arr_2), axis=0))
+arr_a = []
+arr_b = []
+
+for i in range(int(n)):
+    arr_a.append(input().split())
+
+for i in range(int(m)):
+    arr_b.append(input().split())
+
+arr_a = numpy.array(arr_a, int)
+arr_b = numpy.array(arr_b, int)
+
+print(numpy.concatenate((arr_a, arr_b), axis=0))
