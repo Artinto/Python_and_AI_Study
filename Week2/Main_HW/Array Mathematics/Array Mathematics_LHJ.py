@@ -6,12 +6,12 @@ A = []
 B = []
 
 for i in range(n):
-    A.append([int(j) for j in input().split()])
+    A.append(input().split())
 
 for i in range(n):
-    B.append([int(j) for j in input().split()])
+    B.append(input().split())
 
-A = numpy.array(A)
-B = numpy.array(B)
+A = numpy.array(A, int)
+B = numpy.array(B, int)
 
 print(A+B, A-B, A*B, A//B, A%B, A**B, sep='\n')
