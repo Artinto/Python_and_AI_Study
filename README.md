@@ -210,8 +210,8 @@
    <details>
    <summary><strong>sub HW</strong></summary>
 
-   - [백준] 1차원 배열
-   - [백준] 함수
+   - [백준] [1차원 배열](https://www.acmicpc.net/step/6)
+   - [백준] [함수](https://www.acmicpc.net/step/5)
    
    </details>
 
