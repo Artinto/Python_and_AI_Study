@@ -40,7 +40,6 @@ class Complex(object):
     def mod(self):
         real= pow(self.real**2+self.imaginary**2,0.5)
         return Complex(real, 0)
-# Classes Dealing with Complex Numbers in python - Hacker Rank Solution END
 
     def __str__(self):
         if self.imaginary == 0:
