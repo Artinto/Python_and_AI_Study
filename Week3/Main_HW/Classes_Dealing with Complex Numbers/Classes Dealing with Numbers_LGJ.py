@@ -34,3 +34,10 @@ class Complex(object):
         else:
             result = "%.2f-%.2fi" % (self.real, abs(self.imaginary))
         return result
+
+if __name__ == '__main__':
+    c = map(float, input().split())
+    d = map(float, input().split())
+    x = Complex(*c)
+    y = Complex(*d)
+    print(*map(str, [x+y, x-y, x*y, x/y, x.mod(), y.mod()]), sep='\n')
