@@ -248,7 +248,7 @@
    <details>
    <summary><strong>sub HW</strong></summary>
 
-   - [백준] Stack
+   - [백준] [Stack](https://www.acmicpc.net/step/11)
    
    </details>
    
