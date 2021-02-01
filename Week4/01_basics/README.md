@@ -1,4 +1,5 @@
-## [01_basics.py](https://github.com/hunkim/PyTorchZeroToAll/blob/master/01_basics.py)
+# [01_basics.py](https://github.com/hunkim/PyTorchZeroToAll/blob/master/01_basics.py)
+
 
 ```python
 import numpy as np
