@@ -233,8 +233,8 @@
    <summary><strong>main HW</strong></summary>
 
    - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 1~2강 유튜브 강의 시청
-      > -	1강: Overview
-      > -	2강: Linear Model
+      > -	1강: [Overview](https://www.youtube.com/watch?v=SKq-pmkekTk&list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m&index=1)
+      > -	2강: [Linear Model](https://www.youtube.com/watch?v=l-Fe9Ekxxj4&list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m&index=2)
    
    -  예제 코드에 주석 달기 - [*01_basics.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/01_basics.py)
 
