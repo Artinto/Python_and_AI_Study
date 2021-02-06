@@ -242,6 +242,9 @@
 
    - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
       > - [1](https://www.youtube.com/watch?v=qPMeuL2LIqY&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=2), [2](https://www.youtube.com/watch?v=Hax03rCn3UI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=4), [3](https://www.youtube.com/watch?v=TxIVr-nk1so&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=6)강
+   - *참고 링크 - [WikiDocs](https://wikidocs.net/book/2788)*
+      > - [03-01](https://wikidocs.net/53560) 
+   
    
    </details>
    
@@ -281,6 +284,9 @@
    - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
       > - [1](https://www.youtube.com/watch?v=qPMeuL2LIqY&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=2), [2](https://www.youtube.com/watch?v=Hax03rCn3UI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=4), [3](https://www.youtube.com/watch?v=TxIVr-nk1so&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=6)강
       > - [8-2](https://www.youtube.com/watch?v=AByVbUX1PUI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=23), [9-2](https://www.youtube.com/watch?v=573EZkzfnZ0&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=27)강
+   - *참고 링크 - [WikiDocs](https://wikidocs.net/book/2788)*
+      > - [03-01](https://wikidocs.net/53560) 
+      > - [03-02](https://wikidocs.net/60754) 
    
    </details>
    
