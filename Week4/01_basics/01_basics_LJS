@@ -1,0 +1,41 @@
+import numpy as np              # 수치해석을 위한 라이브러리 
+import matplotlib.pyplot as plt # 데이터 시각화를 위한 라이브러리  
+
+x_data = [1.0, 2.0, 3.0] 
+y_data = [2.0, 4.0, 6.0] # Lable 
+
+w = 1.0
+
+def forward(x): # 간단히 Bias는 제거하고 가중치와 입력 데이터의 곱을 반환하는 함수  
+    return x*w #  ( hypothesis or y^ ) = x*weight + bias
+
+def loss(x,y): # 이 loss 함수를 바탕으로 weight 값을 조정한다.
+    y_pred = forward(x) # y_pred = y^ 
+    return (y_pred - y)*(y_pred - y) 
+    # MSE에 사용할 Error 값 반환. 이후 평균을 내준다.
+
+    # Mean square Error (Outlier가 적은 경우에는 MSE를 사용하고, Outlier가 적지 않을 때는 MAE를 사용)
+    
+
+w_list = []   # Iteration을 통해 Weight 값을 시각화하여 보기 위해 담을 list
+mse_list = [] # Iteration을 통해 MSE    값을 시각화하여 보기 위해 담을 list
+
+for w in np.arange(0.0, 4.1, 0.1): # 0.0 ~ 4.1 까지 0.1 단위로 iteration 진행 
+    print("w = ", w)
+    l_sum = 0 # l_sum = MSE 
+    for x_val, y_val in zip(x_data, y_data):
+        
+        # zip 내장함수 : [ (x_data1,y_data1) , (x_data2,y_data2) , (x_data3,y_data3) , ... ]
+        
+        y_pred_val = forward(x_val) # Iteration을 통해 바뀌는 Weight 값과 입력 데이터 x_val를 사용하여 Prediction 반환 
+        l = loss(x_val, y_val)   # 입력 데이터와 Prediction 사이의 Loss 계산 
+        l_sum += l               # 총 Loss 값들을 모두 계산한 후 평균을 내기 위해 loss를 모두 더하는 과정
+        print("\t", x_val, y_val, y_pred_val, l)
+    print("MSE = ", l_sum / 3)  # MSE
+    w_list.append(w)            # 현재 Weight 값 list에 추가
+    mse_list.append(l_sum / 3)  # 현재 MSE 값 list에 추가
+
+plt.plot(w_list, mse_list) # weight , mse 값 시각화 
+plt.ylabel("Loss")
+plt.xlabel("w")
+plt.show()
