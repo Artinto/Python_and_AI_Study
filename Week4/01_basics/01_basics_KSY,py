@@ -1,0 +1,49 @@
+import numpy as np
+import matplotlib.pyplot as plt
+# _y_ =ax+b
+x_data = [1.0, 2.0, 3.0] #변수 x의 값모음
+y_data = [2.0, 4.0, 6.0] #변수 y의 값모음
+
+
+
+def forward(x):
+    return x * w   #_y_=ax와 비슷 1차함수로 생각
+
+
+
+def loss(x, y):
+    y_pred = forward(x) #loss 는 변수x를 넣어서 나온 y_pred에 변수y 모음을 각각 대치하여 (_y_ - y)**2를 해준값이다
+    return (y_pred - y) * (y_pred - y)
+
+
+w_list = [] #가정한 w의 데이터를 모으기위한 변수
+mse_list = []#가정한 w를 통해 나온 mse의 데이처를 모으기위한 변수
+
+for w in np.arange(0.0, 4.1, 0.1): #w를 0부터 4까지 0.1씩 커지는 for문 작성
+    # Print the weights and initialize the lost
+    print("w=", w)
+    l_sum = 0 #가정한  w를 대입해서 나온 loss의 값을 다 더한 값
+
+    for x_val, y_val in zip(x_data, y_data):#zip 으로 x,y데이터를 하나씩 대입시킴
+        
+        y_pred_val = forward(x_val) #y_pred = w*x
+        l = loss(x_val, y_val)     #(y_pred-y)**2
+        l_sum += l  #loss들 다더함
+        print("\t", x_val, y_val, y_pred_val, l)
+    # Now compute the Mean squared error (mse) of each
+    # Aggregate the weight/mse from this run
+    print("MSE=", l_sum / len(x_data))  #mse는 loss의총합계 / x데이터의 갯수
+    w_list.append(w)  #w list에 추가
+    mse_list.append(l_sum / len(x_data)) #mse list에 추가 mse를 따로 구해서 넣어도댐
+
+# Plot it all
+plt.plot(w_list, mse_list) # 그래프에 x, y축 값을   w 와  loss로 지정하고 그래프로 보여주는 단계 
+plt.ylabel('Loss')
+plt.xlabel('w')
+plt.show()
+
+
+'''loss =(wx-y)**2= xw**2 - 2yxw + y**2
+    loss를 y라고하고 w를 x라하고 x y를 a b라하면
+    y = (ax)**2 - 2abx + b**2 같은 2차 함수 그래프가 나온다 그이유는 w가 1차함수의 기울기인데 이것의 근사값을 
+    구하기위해 가장 근사한 w를 기준으로 +-를 하면서 값을 알아내야 하기때문에 2차함수로 나타나는것 같다고 이해하려 한다.'''
