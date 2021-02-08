@@ -33,8 +33,7 @@ for w in np.arange(0.0, 4.1, 0.1):
     print("w=", w)
     l_sum = 0
 
-    # 내장 함수 zip은 동일한 개수로 이루어진 자료형을 묶어주는 역할을 하는 함수로
-       x_val과 y_val에 각각 x_data와 y_data 값을 대입
+    # 내장 함수 zip은 동일한 개수로 이루어진 자료형을 묶어주는 역할을 하는 함수로 x_val과 y_val에 각각 x_data와 y_data 값을 대입
     # forward함수를 통해 x_val값으로 단순 선형 모델 식으로 계산후, y_pred_val에 대입
     # 손실함수를 통해 나온 값을 l에 저장
     # for문이 끝날 때까지 오차값을 l_sum에 더함
