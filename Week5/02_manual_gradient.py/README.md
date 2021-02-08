@@ -1,4 +1,4 @@
-# [02_manual_gradient.py](https://github.com/hunkim/PyTorchZeroToAll/blob/master/02_manual_gradient.py)
+# [03_auto_gradient.py](https://github.com/hunkim/PyTorchZeroToAll/blob/master/03_auto_gradient.py)
 
 ```python
 # Training Data
