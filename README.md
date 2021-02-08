@@ -258,6 +258,8 @@
 <br>
 
 
+### 인공지능 스터디 목차 및 발표자
+![image](https://user-images.githubusercontent.com/53847442/107224659-11e94300-6a5b-11eb-94c4-145c119ff46e.png)
 
 
 ### 5주차: AI
