@@ -292,6 +292,9 @@
    
 <br>
 
+  - [2021_Python&AI_study_4주차_.pptx](https://github.com/Artinto/Python_and_AI_Study/files/5943805/2021_Python.AI_study_4.Linear.pptx)
+
+
 
 
 
