@@ -279,8 +279,8 @@
    <summary><strong>main HW</strong></summary>
 
    - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 3~4강 유튜브 강의 시청 (+발표자: 3\~4강 발표 준비)
-      > -	3강: Gradient Descent
-      > -	4강: Back-propagation and Autograd
+      > -	3강: [Gradient Descent](https://www.youtube.com/watch?v=SKq-pmkekTk&list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m&index=1) - 이종수
+      > -	4강: [Back-propagation and Autograd](https://www.youtube.com/watch?v=l-Fe9Ekxxj4&list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m&index=2) - 이기진
    
    -  예제 코드에 주석 달기 - [*02_manual_gradient.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/02_manual_gradient.py) , [*03_auto_gradient.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/03_auto_gradient.py)
 
