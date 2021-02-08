@@ -268,6 +268,9 @@
       
    - 지난 주차 예제 코드 돌아가면서 설명
    
+   - [2021_Python&AI_study_4주차_.pptx](https://github.com/Artinto/Python_and_AI_Study/files/5943805/2021_Python.AI_study_4.Linear.pptx)
+
+   
 - **과제 공지**
 
    <details>
@@ -292,8 +295,7 @@
    
 <br>
 
-  - [2021_Python&AI_study_4주차_.pptx](https://github.com/Artinto/Python_and_AI_Study/files/5943805/2021_Python.AI_study_4.Linear.pptx)
-
+  
 
 
 
