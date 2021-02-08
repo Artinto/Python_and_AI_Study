@@ -113,7 +113,11 @@
 
 
 ## 스터디 커리큘럼
-
+   
+<details>
+<summary><strong>1~4주차</strong></summary>
+   
+   
 ### 1주차: OT
 - **스터디 진행**
    - 스터디 진행 방향 상세설명
@@ -256,10 +260,13 @@
    </details>
    
 <br>
+</details><br>
 
 
-### 인공지능 스터디 목차 및 발표자
-![image](https://user-images.githubusercontent.com/53847442/107224659-11e94300-6a5b-11eb-94c4-145c119ff46e.png)
+
+### 인공지능 발표 일정 및 발표자
+![image](https://user-images.githubusercontent.com/42428487/107225404-18c48580-6a5c-11eb-818c-6ca10abac7f7.png)
+
 
 
 ### 5주차: AI
