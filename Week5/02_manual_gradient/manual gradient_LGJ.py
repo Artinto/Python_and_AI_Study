@@ -3,7 +3,7 @@ import pdb  # pdb(파이썬 디버거) 호출
 
 x_data = [1.0, 2.0, 3.0]  # x데이터 입력
 y_data = [2.0, 4.0, 6.0]  # y데이터 입력
-w = torch.tensor([1.0], requires_grad=True) # 가중치를 0로 초기화한 후
+w = torch.tensor([1.0], requires_grad=True) # 값이 1.0인 벡터 텐서 w를 선언하고, 이 텐서에 기울기를 저장하겠다
 
 # our model forward pass
 def forward(x): # 포워드 함수 선언(x*w)
