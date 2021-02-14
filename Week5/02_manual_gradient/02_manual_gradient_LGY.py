@@ -19,7 +19,7 @@ def loss(x, y):
 
 # gradient 계산
 def gradient(x, y):  
-    # loss function의 w편미분
+    # loss function의 w편미분 (loss변화량 / w변화량)
     # loss(w) = (x*w - y)^2 
     return 2 * x * (x * w - y)
 
@@ -32,7 +32,7 @@ for epoch in range(10): # 10번 반복학습시키겠다
     for x_val, y_val in zip(x_data, y_data):
         grad = gradient(x_val, y_val) # loss function의 w편미분한 gradient구하기
         w = w - 0.01 * grad # 구한 gradient값으로 weight updata하기
-        print("\tgrad: ", x_val, y_val, round(grad, 2)) # '\t' : tab, round(grad, 2) : grad값을 소수점 둘째자리까지 나타내기
+        print("\tgrad: ", x_val, y_val, round(grad, 2)) # '\t' : tab, round(grad, 2) : grad값을 소수점 둘째자리까지 반올림하여 나타내기
         l = loss(x_val, y_val) # loss func을 통해 loss값 구하기
     print("progress:", epoch, "w=", round(w, 2), "loss=", round(l, 2))
 
