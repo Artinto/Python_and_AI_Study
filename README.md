@@ -312,9 +312,9 @@
 ### 6주차: AI
 - **스터디 진행**
    - 3~4강 발표 & 어려웠던 내용 질문
-      - [3강: Gradient Descent](https://www.youtube.com/watch?v=SKq-pmkekTk&list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m&index=1)
+      - 3강: Gradient Descent
          > [3강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/5981716/3._Gradient_Descent_.pdf)
-      - [4강: Back-propagation and Autograd](https://www.youtube.com/watch?v=l-Fe9Ekxxj4&list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m&index=2)
+      - 4강: Back-propagation and Autograd
          > [4강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/5981715/4._Back-Propagation.and.Autograd_.pptx)
    
    - 지난 주차 예제 코드 돌아가면서 설명
