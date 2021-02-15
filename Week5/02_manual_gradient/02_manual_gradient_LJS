@@ -1,0 +1,29 @@
+import numpy as np               # 수치해석을 위한 라이브러리 
+import matplotlib.pyplot as plt  # 데이터 시각화를 위한 라이브러리  
+
+x_data = [1.0, 2.0, 3.0] 
+y_data = [2.0, 4.0, 6.0] # Lable 
+
+w = 1.0
+
+def forward(x): # 간단히 Bias는 제거하고 가중치와 입력 데이터의 곱을 반환하는 함수  
+    return x*w #  ( hypothesis or y^ ) = x*weight + bias
+
+def loss(x,y): # 이 loss 함수를 바탕으로 weight 값을 조정한다.
+    y_pred = forward(x) # y_pred = y^ 
+    return (y_pred - y)*(y_pred - y) # MSE에 사용할 Error 값 반환. 이후 평균을 내준다.
+
+def gradient(x,y):
+    return 2*x*( x*w - y) # w : 전역 변수 
+
+print("predict (before Training)", forward(4))
+
+for epoch in range(100):
+    for x_val , y_val in zip(x_data, y_data):
+        grad = gradient(x_val, y_val)
+        w = w- 0.01*grad  # Gradient Update
+        print("\tgrad: ", x_val, y_val, grad)
+        l = loss(x_val, y_val) # loss functuon Accumulation
+    print("Progress : ", epoch, "w = ", w , "loss = ", l )
+print("Predict (after Training)", "4 Hours", forward(4))
+    
