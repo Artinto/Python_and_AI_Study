@@ -273,11 +273,11 @@
 - **스터디 진행**
    - 1~2강 발표 
       - 1강: Overview
-      - 2강: Linear Model
+      - 2강: Linear Model  
+         > [1-2강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/5943805/2021_Python.AI_study_4.Linear.pptx)
+
       
    - 지난 주차 예제 코드 돌아가면서 설명
-   
-   - [2021_Python&AI_study_4주차_.pptx](https://github.com/Artinto/Python_and_AI_Study/files/5943805/2021_Python.AI_study_4.Linear.pptx)
 
    
 - **과제 공지**
@@ -333,6 +333,10 @@
    - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
       > - [1](https://www.youtube.com/watch?v=qPMeuL2LIqY&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=2), [2](https://www.youtube.com/watch?v=Hax03rCn3UI&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=4), [3](https://www.youtube.com/watch?v=TxIVr-nk1so&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=6)강
       > - [5-1](https://www.youtube.com/watch?v=PIjno6paszY&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=11), [5-2](https://www.youtube.com/watch?v=6vzchGYEJBc&list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm&index=12)강
+
+   - *참고 링크 - [WikiDocs](https://wikidocs.net/book/2788)*
+      > - [03-01](https://wikidocs.net/53560) 
+      > - [03-02](https://wikidocs.net/60754) 
    
    </details>
    
