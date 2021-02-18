@@ -1,0 +1,68 @@
+import torch
+from torch.autograd import Variable
+
+# data : Nx1 Matrix
+
+x_data = Variable(torch.Tensor([[1.0],[2.0],[3.0]])) 
+y_data = Variable(torch.Tensor([[2.0],[4.0],[6.0]]))
+
+# 1. Model design with class
+############################################################################################
+
+class Model(torch.nn.Module):  # torch.nn.Moduele Class 상속 
+    
+    # 모델 생성자 : 초기설정 값 Setting 
+    # Super : 부모클래스의 함수를 오버라이딩 할 때 사용 여기서는 liear regression을 사용 
+
+    def __init__(self):
+        super(Model,self).__init__() 
+        self.linear = torch.nn.Linear(1,1) # 1 Input , 1 Output
+        
+    # Forward Pass
+    def forward(self,x):
+        y_pred = self.linear(x) # input 으로 x data , output으로 y_pred
+        return y_pred
+    
+# Model class 객체 생성
+
+model = Model()
+
+
+# 2. Loss, Optimizer Setting
+############################################################################################
+
+criterion = torch.nn.MSELoss(size_average=False)  # MSE 손실함수 계산
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)  # SGD optimizer로 Model parameter들 업데이트, learning rate = 0.01
+
+
+
+# 3. Training Cycle : Forward, Backward, Update with loss and Optimizer
+############################################################################################
+
+for epoch in range(500):
+    # Forward Pass
+    y_pred = model(x_data) # 생성한 Model class에 x_data Input으로 넣어줌 -> 자동으로 forward 함수로 들어감
+    
+    # Compute loss and print
+    
+    loss = criterion(y_pred, y_data) # 손실함수 계산 (Mean Square Error 사용)
+    print(epoch, loss.item())
+    
+    # Gradient 초기화, Backward Pass, Update Weights
+    
+    optimizer.zero_grad() # Gradient Initializer
+    loss.backward()       # Backward Pass
+    optimizer.step()      # Update
+
+    
+# After Training
+hour_var = Variable(torch.tensor([[4.0]])) # 1x1 Matrix 
+
+# model class의 forward 함수에 hour_var 넣은 수의 예측값 return 
+print("Predict (After training)", 4, model.forward(hour_var).data[0][0].item()) 
+    
+        
+        
+        
+        
+    
