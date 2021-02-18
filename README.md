@@ -363,9 +363,8 @@
    - [실습] Linear Regression 코드 작성 ([*test-score.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-01-test-score.csv) 이용 | [Download](https://github.com/Artinto/Python_and_AI_Study/files/6002122/data-01-test-score.zip))
 
    </details>
-   
    <details>
-   <summary><strong>sub HW</strong></summary><br>
+   <summary><strong>sub HW</strong></summary>
    
    - [실습] Logistic Regression 코드 작성 ([*diabetes.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-03-diabetes.csv) 이용 | [Download](https://github.com/Artinto/Python_and_AI_Study/files/6002147/data-03-diabetes.zip))
    
@@ -403,7 +402,7 @@
    </details>
    
    <details>
-   <summary><strong>sub HW</strong></summary><br>
+   <summary><strong>sub HW</strong></summary>
 
    - [실습] 각자 작성했던 코드를 Wide & Deep하게 만들어보고 Data Loader 부분 코딩해보기
 
@@ -441,7 +440,7 @@
    </details>
    
    <details>
-   <summary><strong>sub HW</strong></summary><br>
+   <summary><strong>sub HW</strong></summary>
 
    - [실습] MNIST 이용해서 softmax classification 적용해보기
 
@@ -471,7 +470,7 @@
    </details>
    
    <details>
-   <summary><strong>sub HW</strong></summary><br>
+   <summary><strong>sub HW</strong></summary>
    
    - [실습] 선택한 코드에 추가로 accuracy 확인을 위한 코드 작성
    
@@ -505,7 +504,7 @@
    </details>
    
    <details>
-   <summary><strong>sub HW</strong></summary><br>
+   <summary><strong>sub HW</strong></summary>
 
    - [실습] MNIST 이용해서 softmax classification 적용해보기
 
@@ -539,7 +538,7 @@
    </details>
    
    <details>
-   <summary><strong>sub HW</strong></summary><br>
+   <summary><strong>sub HW</strong></summary>
 
    - [실습] 의자 데이터([*origin data*](https://github.com/deeplearningzerotoall/PyTorch/tree/master/custom_data))로 데이터 Resize하고, training set, test set으로 나눠보기
 
@@ -593,7 +592,7 @@
    </details>
    
    <details>
-   <summary><strong>sub HW</strong></summary><br>
+   <summary><strong>sub HW</strong></summary>
 
    - [실습] hello 코드를 helloworld로 더 추가해서 완성해보기 + RNN accuracy 측정 추가로 코딩하기 
 
@@ -634,7 +633,7 @@
    </details>
    
    <details>
-   <summary><strong>sub HW</strong></summary><br>
+   <summary><strong>sub HW</strong></summary>
 
    - [실습] RNN LSTM GRU개념공부 [*참고*](https://yjjo.tistory.com/15?category=881892) , [*참고2*](https://wikidocs.net/22886)
 
