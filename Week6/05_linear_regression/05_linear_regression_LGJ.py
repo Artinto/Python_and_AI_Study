@@ -11,8 +11,8 @@ class Model(nn.Module): #nn.Module의 하위 클래스인 Model이라는 클래�
         """
         In the constructor we instantiate two nn.Linear module
         """
-        super(Model, self).__init__() ##nn.Module의 생성자를 호출
-        self.linear = torch.nn.Linear(1, 1)  # One in and one out #객체에 입력,출력이 각각 1개인 선형 모듈을 적용
+        super(Model, self).__init__() #nn.Module의 생성자를 호출
+        self.linear = torch.nn.Linear(1, 1)  #One in and one out #객체에 입력,출력이 각각 1개인 선형 모듈을 적용
 
     def forward(self, x): #x라는 한개의 변수를 받는 foward라는 클래스 생성
         """
