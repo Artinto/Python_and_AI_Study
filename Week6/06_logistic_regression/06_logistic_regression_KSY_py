@@ -1,0 +1,61 @@
+from torch import tensor 
+from torch import nn
+from torch import sigmoid
+import torch.nn.functional as F
+import torch.optim as optim
+####################################   위에 설명 : 쓸려고하는 모듈을 선언
+
+
+
+# Training data and ground truth
+x_data = tensor([[1.0], [2.0], [3.0], [4.0]])   #4x1의 2차원 행렬 벡터 x y 값에 선언
+y_data = tensor([[0.], [0.], [1.], [1.]])
+
+
+class Model(nn.Module): #Module 상위클라스 Model 하위클라스
+    def __init__(self):
+        """
+        In the constructor we instantiate nn.Linear module
+        """
+        super(Model, self).__init__() #self를 안 써도됨 이것도 생성자 초기화 방법
+        self.linear = nn.Linear(1, 1)  # One in and one out 1인풋  1아웃풋
+
+    def forward(self, x):
+        """
+        In the forward function we accept a Variable of input data and we must return
+        a Variable of output data.
+        """
+        y_pred = sigmoid(self.linear(x)) #y= A(wx+b)
+        
+        return y_pred
+
+
+# our model
+model = Model()  
+
+# Construct our loss function and an Optimizer. The call to model.parameters()
+# in the SGD constructor will contain the learnable parameters of the two
+# nn.Linear modules which are members of the model.
+criterion = nn.BCELoss(reduction='mean') #BCE (분류기) 오차를 대입
+optimizer = optim.SGD(model.parameters(), lr=0.01)# 확률적경사 하강법을 학습률 0.01에 맞춰 실행
+
+# Training loop
+for epoch in range(1000):#1000번 반복
+    # Forward pass: Compute predicted y by passing x to the model
+    y_pred = model(x_data) #model 생성자에 forward값을 대입
+
+    # Compute and print loss
+    loss = criterion(y_pred, y_data)  #손실loss 를 구함(분류기사용)
+    print(f'Epoch {epoch + 1}/1000 | Loss: {loss.item():.4f}')
+
+    # Zero gradients, perform a backward pass, and update the weights.
+    optimizer.zero_grad()#변화율 0으로 초기화
+    loss.backward() #loss초기화
+    optimizer.step() #업데이트
+
+# After training ???????
+print(f'\nLet\'s predict the hours need to score above 50%\n{"=" * 50}')   
+hour_var = model(tensor([[1.0]]))
+print(f'Prediction after 1 hour of training: {hour_var.item():.4f} | Above 50%: {hour_var.item() > 0.5}')
+hour_var = model(tensor([[7.0]]))
+print(f'Prediction after 7 hours of training: {hour_var.item():.4f} | Above 50%: { hour_var.item() > 0.5}')
