@@ -3,7 +3,7 @@
 <br>
 
 ### ◼ 데이터
-#### [*test-score.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-01-test-score.csv) | [Download](https://github.com/Artinto/Python_and_AI_Study/files/6002122/data-01-test-score.zip)
+#### [*test-score.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-01-test-score.csv) | [Download](https://github.com/Artinto/Python_and_AI_Study/files/6022269/data-01-test-score.zip)
 <img src="https://camo.githubusercontent.com/cc890d5f3e37879c3aecd5a3e839b05838431f74/68747470733a2f2f757365722d696d616765732e67697468756275736572636f6e74656e742e636f6d2f34323432383438372f37323930373337332d31623830306130302d336437372d313165612d386130362d3162386434653066653231312e706e67">
 <br>
 
