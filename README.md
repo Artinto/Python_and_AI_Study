@@ -351,7 +351,9 @@
 - **스터디 진행**
    - 5~6강 발표 & 어려웠던 내용 질문
       - 5강: Linear Regression
+        > [5강 발표자료](https://github.com/hunkim/PyTorchZeroToAll/files/6022315/Linear.Regression.in.PyTorch.way.pptx)
       - 6강: Logistic Regression
+        > [6강 발표자료](https://github.com/hunkim/PyTorchZeroToAll/files/6022314/default.pptx)
    
    - 지난 주차 예제 코드 돌아가면서 설명
    
