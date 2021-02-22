@@ -43,7 +43,7 @@ for epoch in range(500):
     print(f'Epoch: {epoch} | Loss: {loss.item()} ') # loss출력 
 
     # Zero gradients, perform a backward pass, and update the weights.
-    optimizer.zero_grad() # 가중치 초기화 
+    optimizer.zero_grad() # 기울기 초기화
     loss.backward() #역전파 
     optimizer.step()
 
