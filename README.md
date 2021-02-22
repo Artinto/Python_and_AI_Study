@@ -366,7 +366,7 @@
    <details>
    <summary><strong>sub HW</strong></summary>
    
-   - [실습] Logistic Regression 코드 작성 ([*diabetes.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-03-diabetes.csv) 이용 | [Download](https://github.com/Artinto/Python_and_AI_Study/files/6002147/data-03-diabetes.zip))
+   - [실습] Logistic Regression 코드 작성 ([*diabetes.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-03-diabetes.csv) 이용 | [Download](https://github.com/Artinto/Python_and_AI_Study/files/6002147/data-03-diabetes.zip)) + accuracy 확인을 위한 코드 작성
    
    </details>
 
