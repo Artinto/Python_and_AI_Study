@@ -360,7 +360,7 @@
    <details>
    <summary><strong>main HW</strong></summary>
 
-   - [실습] Linear Regression 코드 작성 ([*test-score.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-01-test-score.csv) 이용 | [Download](https://github.com/Artinto/Python_and_AI_Study/files/6002122/data-01-test-score.zip))
+   - [실습] Linear Regression 코드 작성 ([*test-score.csv*](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-01-test-score.csv) 이용 | [Download](https://github.com/Artinto/Python_and_AI_Study/files/6022269/data-01-test-score.zip))
 
    </details>
    <details>
