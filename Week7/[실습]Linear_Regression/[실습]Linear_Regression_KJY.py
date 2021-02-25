@@ -1,8 +1,11 @@
 # pandas 를 이용한 데이터 추출
 import pandas as pd
 import numpy as np
-csv_test=pd.read_csv('C:/input_file/data-01-test-score/data-01-test-score.csv', header=None, names=['A','B','C','D'])
+from torch import nn
+import torch
 from torch import tensor
+
+csv_test=pd.read_csv('C:/input_file/data-01-test-score/data-01-test-score.csv', header=None, names=['A','B','C','D'])
 x=csv_test[['A','B','C']]
 
 y=csv_test['D']
@@ -10,10 +13,9 @@ x_data = torch.FloatTensor(x.values)
 
 y_data = torch.FloatTensor(y.values)
 
-y_data.unsqueeze(-1)
+y_data = y_data.unsqueeze(-1)
 
-from torch import nn
-import torch
+
 
 class Model(nn.Module):
     def __init__(self):
