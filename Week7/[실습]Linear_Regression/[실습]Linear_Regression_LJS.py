@@ -29,15 +29,14 @@ error =  []
 trying = []
 
 # 다변수함수의 Gradient Descent Algorithm 구현 
-for epoch in range(10001):
+for epoch in range(1000):
     w[0][0] -=  learning_rate * ( np.sum( (predict(train_data) - test_data)*train_data[:,0] ) / len(train_data) )
     w[1][0] -=  learning_rate * ( np.sum( (predict(train_data) - test_data)*train_data[:,1] ) / len(train_data) )
     w[2][0] -=  learning_rate * ( np.sum( (predict(train_data) - test_data)*train_data[:,2] ) / len(train_data) )
     
-    if(epoch%200==0):
-        print("Epoch: ",epoch,", Error: ", loss_f(train_data, test_data), "w: ",w)
-        error.append(loss_f(train_data,test_data))
-        trying.append(epoch)
+    print("Epoch: ",epoch,", Error: ", loss_f(train_data, test_data), "w: ",w)
+    error.append(loss_f(train_data,test_data))
+    trying.append(epoch)
 
 plt.plot(error,trying)
 plt.xlabel("Epoch")
