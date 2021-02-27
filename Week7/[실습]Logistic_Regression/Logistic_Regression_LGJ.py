@@ -57,6 +57,7 @@ hour_var = model(tensor([[-0.41177, 0.165829, 0.213115, 0, 0, -0.23696, -0.89496
 print(f'Prediction after 1 hour of training: {hour_var.item():.4f} | Above 50%: {hour_var.item() > 0.5}')
 
 #출력결과
+'''
 "C:\Users\GIJIN LEE\anaconda3\envs\pytorch\python.exe" C:/source/PythonAI/Logistic_Regression_LGJ.py
 torch.Size([759, 8])
 torch.Size([759, 1])
@@ -1071,3 +1072,4 @@ Prediction after 1 hour of training: 0.2899 | Above 50%: False
 Prediction after 1 hour of training: 0.7182 | Above 50%: True
 
 Process finished with exit code 0
+'''
