@@ -18,4 +18,5 @@
 - logistic regression 모델 구축
 - 1000 epoch까지 모델을 학습하여 loss 감소하는 것 확인
 - accuracy 확인을 위한 코드 작성 (매 epoch 혹은 특정 epoch마다 accuracy 출력)
+   - (참고) `모델이 예측한 y값`과 `실제 y값`을 비교한 후 `맞춘 개수/ 데이터 개수 × 100`으로 출력
 
