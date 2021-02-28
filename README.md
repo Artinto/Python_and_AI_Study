@@ -441,13 +441,6 @@
       
    </details>
    
-   <details>
-   <summary><strong>sub HW</strong></summary>
-
-   - [실습] MNIST 이용해서 softmax classification 적용해보기
-
-   </details>
-
 <br>
 
 
@@ -467,16 +460,10 @@
    <details>
    <summary><strong>main HW</strong></summary>
 
-   - [실습] 7~9강 관련 코드 작성
+   - [실습] MNIST 이용해서 softmax classification 적용해보기
    
    </details>
    
-   <details>
-   <summary><strong>sub HW</strong></summary>
-   
-   - [실습] 선택한 코드에 추가로 accuracy 확인을 위한 코드 작성
-   
-   </details>
    
 
 <br>
