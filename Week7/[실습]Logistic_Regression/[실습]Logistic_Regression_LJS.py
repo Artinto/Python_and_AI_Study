@@ -28,8 +28,6 @@ def predict(x, w):
         
     return result
 
-f = lambda x : loss_f(x_data, y_data, w)  # 람다 표현식으로 함수 생성 -> 미분에 사용할 것
-
 def Numerical_derivative(w):
     delta = 10e-1
     gradient = np.zeros_like(w)  # weight array와 같은 크기를 가진 빈 값의 Gradient 생성
