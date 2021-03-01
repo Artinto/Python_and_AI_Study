@@ -1,41 +1,41 @@
-import pandas as pd
-from torch import nn
-import torch
-from torch import tensor
+import pandas as pd #pandas 패키지를 pd라고 호출하겠다
+from torch import nn    #torch에서 nn을 불러옴(Neural Network)
+import torch  #pytorch를 불러옴
+from torch import tensor  #torch 에서 tensor를 불러옴
 
 test = pd.read_csv('C:/Users/GIJIN LEE/Downloads/data-01-test-score.csv', sep=',', names=['A', 'B', 'C', 'D'])
-X = test[['A', 'B', 'C']]
-Y = test['D']
+X = test[['A', 'B', 'C']]   #X는 test의 'A','B','C'열
+Y = test['D']   #Y는 test의 'D'열
 
-x_data = torch.FloatTensor(X.values)
-y_data = torch.FloatTensor(Y.values)
+x_data = torch.FloatTensor(X.values)    #X값들이 대입된 x_data텐서를 생성
+y_data = torch.FloatTensor(Y.values)    #Y값들이 대입된 ydata텐서를 생성
 
-class Model(nn.Module):
-    def __init__(self):
-        super(Model, self).__init__()
-        self.linear = torch.nn.Linear(3, 1)
+class Model(nn.Module): #nn.Module의 하위 클래스인 Model이라는 클래스를 생성 
+    def __init__(self): #초기화 메서드
+        super(Model, self).__init__()   #nn.Module의 생성자를 호출
+        self.linear = torch.nn.Linear(3, 1) #객체에 입력이 3개, 출력이 1개인 선형 모듈을 적용
 
-    def forward(self, x):
-        y_pred = self.linear(x)
-        return y_pred
+    def forward(self, x): #x라는 한개의 변수를 받는 foward라는 메서드 생성
+        y_pred = self.linear(x) #y_pred에 self.linear(x)의 값을 대입
+        return y_pred    #y.pred 반환
 
 
-model = Model()
+model = Model() #model에 Model클래스를 적용
 
-criterion = torch.nn.MSELoss(reduction='mean')
-optimizer = torch.optim.SGD(model.parameters(), lr=0.00001)
+criterion = torch.nn.MSELoss(reduction='mean') #criterion에 평균제곱오차값 대입
+optimizer = torch.optim.SGD(model.parameters(), lr=0.00001)  #optimizer에 확률적경사하강법(Stochastic Gradient Decent)을 사용, parameters()함수를 통해 변수 자동입력, 학습률은 0.0
 
-for epoch in range(1000):
-    y_pred = model(x_data)
+for epoch in range(1000):  #경사하강법 1000번 실행
+    y_pred = model(x_data)  #model에 x_data를 대입하여 나온 foward의 결괏값을 y_data에 대입
 
-    loss = criterion(y_pred, y_data)
-    print(f'Epoch: {epoch} | Loss: {loss.item()} ')
+    loss = criterion(y_pred, y_data)  #loss에 y_pred와 y_data의 평균제곱오차값을 대입
+    print(f'Epoch: {epoch} | Loss: {loss.item()} ') #SGD횟수,loss값을 출력
 
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+    optimizer.zero_grad() #경사하강법 재실행을 위해 미분했던 값 초기화
+    loss.backward() #loss에 대해 역전파 시행(w,b에 대한 loss의 편미분 구하기)
+    optimizer.step()    #사용된 변수(w,b)들의 값을 갱신
 
-hour_var = tensor([[73.0, 80.0, 75.0]])
+hour_var = tensor([[73.0, 80.0, 75.0]])  #학습 후 x=73 80 75를 대입했을 때의 예상 결괏값 
 y_pred = model(hour_var)
 print("Prediction (after training)",  73.0, 80.0, 75.0, y_pred.item())
 
