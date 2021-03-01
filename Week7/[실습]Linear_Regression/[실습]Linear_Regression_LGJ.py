@@ -3,7 +3,7 @@ from torch import nn    #torch에서 nn을 불러옴(Neural Network)
 import torch  #pytorch를 불러옴
 from torch import tensor  #torch 에서 tensor를 불러옴
 
-test = pd.read_csv('C:/Users/GIJIN LEE/Downloads/data-01-test-score.csv', sep=',', names=['A', 'B', 'C', 'D'])
+test = pd.read_csv('C:/Users/GIJIN LEE/Downloads/data-01-test-score.csv', sep=',', names=['A', 'B', 'C', 'D'])  #pandas를 활용해 지정경로의 csv 불러옴. ','로 구분, 각 열의 이름을'A,B,C,D'로 지정
 X = test[['A', 'B', 'C']]   #X는 test의 'A','B','C'열
 Y = test['D']   #Y는 test의 'D'열
 
@@ -23,7 +23,7 @@ class Model(nn.Module): #nn.Module의 하위 클래스인 Model이라는 클래�
 model = Model() #model에 Model클래스를 적용
 
 criterion = torch.nn.MSELoss(reduction='mean') #criterion에 평균제곱오차값 대입
-optimizer = torch.optim.SGD(model.parameters(), lr=0.00001)  #optimizer에 확률적경사하강법(Stochastic Gradient Decent)을 사용, parameters()함수를 통해 변수 자동입력, 학습률은 0.0
+optimizer = torch.optim.SGD(model.parameters(), lr=0.00001)  #optimizer에 확률적경사하강법(Stochastic Gradient Decent)을 사용, parameters()함수를 통해 변수 자동입력, 학습률은 0.00001
 
 for epoch in range(1000):  #경사하강법 1000번 실행
     y_pred = model(x_data)  #model에 x_data를 대입하여 나온 foward의 결괏값을 y_data에 대입
