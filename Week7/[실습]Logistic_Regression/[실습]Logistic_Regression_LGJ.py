@@ -1,47 +1,44 @@
-from torch import nn
-from torch import sigmoid
-from torch import tensor
-import torch
-import torch.optim as optim
-import pandas as pd
+from torch import nn    #torch에서 nn을 불러옴(Neural Network)
+from torch import sigmoid   #torch에서 sigmoid 함수를 사용
+from torch import tensor  #torch에서 tensor를 불러옴
+import torch  #pytorch를 불러옴
+import torch.optim as optim #torch.optim를 optim이라고 호출
+import pandas as pd #pandas 패키지를 pd라고 호출
 
 test = pd.read_csv('C:/Users/GIJIN LEE/Downloads/diabetes.csv', sep=',', names=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'])
+#pandas를 활용해 지정경로의 csv 불러옴. ','로 구분, 각 열의 이름을'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'로 지정
+x = test[['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']]  #x는 test의 'A','B','C', 'D', 'E', 'F', 'G', 'H'열
+y = test[['I']]   #y는 test의 'I'열
 
-x = test[['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']]
-y = test[['I']]
+x_data = torch.FloatTensor(x.values)    #x값들이 대입된 x_data텐서를 생성
+y_data = torch.FloatTensor(y.values)    #y값들이 대입된 y_data텐서를 생성
 
-x_data = torch.FloatTensor(x.values)
-y_data = torch.FloatTensor(y.values)
+class Model(nn.Module): #nn.Module의 하위 클래스인 Model이라는 클래스를 생성
+    def __init__(self): #초기화 메서드
+        super(Model, self).__init__()   #nn.Module의 생성자를 호출
+        self.linear = nn.Linear(8, 1) #객체에 입력이 8개, 출력이 1개인 선형 모듈을 적용
 
-print(x_data.shape)
-print(y_data.shape)
-
-class Model(nn.Module):
-    def __init__(self):
-        super(Model, self).__init__()
-        self.linear = nn.Linear(8, 1)
-
-    def forward(self, x):
-        y_pred = sigmoid(self.linear(x))
-        return y_pred
+    def forward(self, x): #x라는 한개의 변수를 받는 foward라는 메서드 생성
+        y_pred = sigmoid(self.linear(x))  #y_pred에 sigmoid(self.linear(x))의 값을 대입
+        return y_pred    #y.pred 반환
 
 
-model = Model()
+model = Model() #model에 Model클래스를 적용
 
-criterion = nn.BCELoss(reduction='mean')
-optimizer = optim.SGD(model.parameters(), lr=0.05)
+criterion = nn.BCELoss(reduction='mean') #criterion에 BCE(Binary Cross Entropy,분류기)오차를 대입
+optimizer = optim.SGD(model.parameters(), lr=0.05)  #optimizer에 확률적경사하강법 대입
 
 
-for epoch in range(1000):
-    y_pred = model(x_data)
+for epoch in range(1000): #경사하강법을 1000번 실행
+    y_pred = model(x_data)  #model에 x_data를 대입하여 나온 foward의 결괏값을 y_data에 대입
 
-    loss = criterion(y_pred, y_data)
+    loss = criterion(y_pred, y_data)  #loss에 y_pred와 y_data의 분류기(BCE)값을 대입
     print(f'Epoch {epoch + 1}/1000 | Loss: {loss.item():.4f}')
 
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-
+    optimizer.zero_grad() #optimizer의 자동미분 값을 0으로 만들어줌
+    loss.backward() #loss 역전파
+    optimizer.step()  #경사 하강법 후의 w값과 b값을 갱신
+#첫 6행 값대입 및 예측값 
 print(f'\nLet\'s predict the hours need to score above 50%\n{"=" * 50}')
 hour_var = model(tensor([[-0.29412, 0.487437, 0.180328, -0.29293, 0, 0.00149, -0.53117, -0.03333]]))
 print(f'Prediction after 1 hour of training: {hour_var.item():.4f} | Above 50%: {hour_var.item() > 0.5}')
