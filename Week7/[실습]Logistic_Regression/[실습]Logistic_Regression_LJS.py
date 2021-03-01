@@ -28,11 +28,11 @@ def predict(x, w):
         
     return result
 
-def Numerical_derivative(w):
+def Numerical_derivative(w):  #  수치미분 : ( f(x+h) - f(x-h) / 2h )
     delta = 10e-1
     gradient = np.zeros_like(w)  # weight array와 같은 크기를 가진 빈 값의 Gradient 생성
     
-    for idx in range(w.size):
+    for idx in range(w.size): # 변화율만 꺼내올 것이기 때문에 원래 값 백업
         tmp = w[idx]
         
         w[idx] = float(tmp) + delta
@@ -51,7 +51,7 @@ def accuracy(x, y,w):
     for x_,y_ in zip(x,y):
         if predict(x_, w) == y_:
             ACC += 1
-    result = ( ACC/len(x) ) * 100
+    result = ( ACC/len(x) ) * 100 # ( 맞춘 문제 / 전체 문제 ) * 100
     return result
             
     
