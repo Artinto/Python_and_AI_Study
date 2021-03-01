@@ -9,6 +9,26 @@ data_path='/var/data-01-test-score.csv'
 #data=np.loadtxt(data_path, delimiter=',', dtype=np.float32)
 data=pd.read_csv(data_path, header=None, dtype=np.float32)
 #x, y 데이터 tensor에 저장
+x=data[[0, 1, 2]]
+y=data[[3]]
+y_data=torch.FloatTensor(y.values)
+
+x_data=torch.FloatTensor(x.values)
+
+class Model(nn.Module):
+    def __init__(self):
+        super(Model, self).__init__()#초기화
+        self.linear = torch.nn.Linear(3, 1) #x세개당 y한개인 선형함수 생성 
+
+    def forward(self, x):
+        y_pred = self.linear(x)#선형 모델을 통해 예측값 저장
+        return y_pred
+
+model = Model()#Model클라스 사용
+a=torch.nn.MSELoss(reduction='sum')
+criterion = torch.nn.MSELoss(reduction='mean')#손실함수 mseloss는 대상간의 평균제곱 오차를 계산,reduction은 데이터의 묶음을 뜻하며 다 더함
+optimizer = torch.optim.SGD(model.parameters(), lr=1e-5)#확률적 경사 하강법 파라미터를 통해서 w와 b의 값을 주며  학습률이 0,01이다
+
 …for epoch in range(1000):#학습 1000번
 
     y_pred = model(x_data)#xdata를 입력하여 y예측값 출력
