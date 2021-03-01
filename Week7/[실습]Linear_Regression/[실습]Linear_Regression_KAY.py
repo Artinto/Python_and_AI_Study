@@ -25,7 +25,6 @@ class Model(nn.Module):
         return y_pred
 
 model = Model()#Model클라스 사용
-a=torch.nn.MSELoss(reduction='sum')
 criterion = torch.nn.MSELoss(reduction='mean')#손실함수 mseloss는 대상간의 평균제곱 오차를 계산,reduction은 데이터의 묶음을 뜻하며 다 더함
 optimizer = torch.optim.SGD(model.parameters(), lr=1e-5)#확률적 경사 하강법 파라미터를 통해서 w와 b의 값을 주며  학습률이 0,01이다
 
