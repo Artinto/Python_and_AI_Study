@@ -1,7 +1,4 @@
 
-Linear Regression .ipynb
-Linear Regression .ipynb_
-[6]
 import pandas as pd
 import numpy as np
 from torch import nn
