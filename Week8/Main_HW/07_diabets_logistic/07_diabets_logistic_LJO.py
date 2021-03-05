@@ -42,7 +42,7 @@ criterion = nn.BCELoss(reduction='mean') #bceloss 사용
 optimizer = optim.SGD(model.parameters(), lr=0.1)
 
 # Training loop
-for epoch in range(100): #100번의 
+for epoch in range(100): #100번의 epoch
     # Forward pass: Compute predicted y by passing x to the model
     y_pred = model(x_data)
 
