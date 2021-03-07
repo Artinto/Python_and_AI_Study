@@ -27,7 +27,7 @@ class Model(nn.Module): #Model의 기능 상속
         """
         out1 = self.sigmoid(self.l1(x)) #첫번째 뉴런의 계산 결과
         out2 = self.sigmoid(self.l2(out1)) #두번째 뉴런의 계산 결과
-        y_pred = self.sigmoid(self.l3(out2)) # out2와 그의 가중치를 곱한 것이 y_pred
+        y_pred = self.sigmoid(self.l3(out2)) # out2와 그의 가중치를 곱한 것이 y_pred 마지막 
         return y_pred
 
 
