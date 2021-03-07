@@ -50,7 +50,7 @@ criterion = nn.BCELoss(reduction='sum') # Reduction = 'sum' -> Batch 에 대한 
 optimizer = optim.SGD(model.parameters(), lr=0.1)
 
 for epoch in range(2):
-    for i, data in enumerate(train_loader, 0): # ##################  0 ?
+    for i, data in enumerate(train_loader, 0): # 0 : i는 0 부터 시작
         inputs, labels = data # train_loader (x_data, y_data) => inputs, labels
 
         # Forward pass
