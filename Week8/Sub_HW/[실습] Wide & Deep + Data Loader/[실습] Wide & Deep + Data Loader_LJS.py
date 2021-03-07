@@ -65,7 +65,8 @@ def predict(y_pred_before_sigmoid):
         else:
             y_pred_before_sigmoid[i] = 0
     
-    return y_pred_before_sigmoid
+    y_pred_After_sigmoid = y_pred_before_sigmoid
+    return y_pred_After_sigmoid
         
 batch = 0
 
