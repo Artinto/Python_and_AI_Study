@@ -18,7 +18,7 @@ loss = nn.CrossEntropyLoss()  # 오차 loss에 nn.CrossEntropyLoss()할당. Cros
 # target is of size nBatch
 # each element in target has to have 0 <= value < nClasses (0-2)
 # Input is class, not one-hot
-Y = tensor([0], requires_grad=False)  # Y는 0,1,2등의 클래스를 넣어줌
+Y = tensor([0], requires_grad=False)  # Y는 0,1,2 중에서 첫번 째 변수 인 0, 즉 [1, 0, 0]
 
 # input is of size nBatch x nClasses = 1 x 4
 # Y_pred are logits (not softmax)
