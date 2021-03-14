@@ -18,7 +18,7 @@ loss = nn.CrossEntropyLoss()  # 오차 loss에 nn.CrossEntropyLoss()할당. Cros
 # target is of size nBatch
 # each element in target has to have 0 <= value < nClasses (0-2)
 # Input is class, not one-hot
-Y = tensor([0], requires_grad=False)  # Y는 0,1,2 중에서 첫번 째 변수 인 0, 즉 [1, 0, 0]
+Y = tensor([0], requires_grad=False)  # Y는 0,1,2 중에서 0의 원-핫인코딩벡터, 즉 [1, 0, 0]
 
 # input is of size nBatch x nClasses = 1 x 4
 # Y_pred are logits (not softmax)
@@ -35,7 +35,7 @@ print(f'Y_pred2: {max(Y_pred2.data, 1)[1].item()}')
 # target is of size nBatch
 # each element in target has to have 0 <= value < nClasses (0-2)
 # Input is class, not one-hot
-Y = tensor([2, 0, 1], requires_grad=False)  # Y는 [2, 0, 1]의 클래스
+Y = tensor([2, 0, 1], requires_grad=False)  # Y는 0,1,2 중에서 각각 2, 0, 1의 원-핫인코딩벡터들, 즉 [0, 0, 1],[1, 0, 0],[0, 1, 0]
 
 # input is of size nBatch x nClasses = 2 x 4
 # Y_pred are logits (not softmax)
