@@ -485,8 +485,6 @@
    
    -  예제 코드에 주석 달기 - [*10_1_cnn_mnist.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/10_1_cnn_mnist.py)
    
-   - 데이터 만들기 (공지 예정)
-
    <br> 
 
    - *참고 강의 - [모두를 위한 딥러닝1 (한글 / Tensorflow)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm)* 
@@ -554,7 +552,7 @@
    <details>
    <summary><strong>main HW</strong></summary>
 
-   - [실습] 직접 만든 데이터로 CNN 코드 작성 (전처리 관련 공지 예정)
+   - [실습] 임의의 데이터로 CNN 코드 작성 (전처리 관련 공지 예정)
    
    </details>
    
