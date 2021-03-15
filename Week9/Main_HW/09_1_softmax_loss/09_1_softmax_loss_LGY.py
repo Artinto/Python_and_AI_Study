@@ -64,3 +64,5 @@ Y_pred2 = tensor([[0.8, 0.2, 0.3],
 l1 = loss(Y_pred1, Y) # softmax + crossentropy
 l2 = loss(Y_pred2, Y)
 print(f'Batch Loss1:  {l1.item():.4f} \nBatch Loss2: {l2.data:.4f}')
+
+
