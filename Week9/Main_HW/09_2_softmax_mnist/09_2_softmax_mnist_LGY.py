@@ -1,5 +1,4 @@
 # https://github.com/pytorch/examples/blob/master/mnist/main.py
-
 from __future__ import print_function
 # python 3에서 쓰던 문법을 2에서 쓸수 있게 해주는 문법. (f-string 때문인 듯)
 from torch import nn, optim, cuda
