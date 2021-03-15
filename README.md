@@ -497,7 +497,7 @@
    <details>
    <summary><strong>sub HW</strong></summary>
 
-   - [실습] MNIST 이용해서 softmax classification 적용해보기 (CNN 이용)
+   - [실습] CIFAR10 dataset 이용해서 softmax classification 적용해보기 (CNN 이용)
 
    </details>
 
