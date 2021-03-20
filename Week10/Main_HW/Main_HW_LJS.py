@@ -28,7 +28,7 @@ test_loader = data.DataLoader(dataset=test_dataset,  # test_dataset을 batch siz
 
 class Net(nn.Module):
 
-    def __init__(self): # Wide and deep  Input data (3x32x32 = 1024) / Output data 10  # Hidden Layer = 3 layers
+    def __init__(self): # Wide and deep  Input data (3x32x32 = 1024) / Output data 10  # Hidden Layer = 3 layers -> 4 layers
         super(Net, self).__init__()
         self.l1 = nn.Linear(3*32*32, 740)
         self.l2 = nn.Linear(740, 520)
