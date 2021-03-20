@@ -1,0 +1,1572 @@
+from __future__ import print_function # Python3 에서 쓰던 문법을 Python 2 에서도 쓰게 해주는 Library
+from torch import nn, optim, cuda
+from torch.utils import data
+from torchvision import datasets, transforms # torchvision : Package consists of popular datasets, model architectures
+import torch.nn.functional as F
+import time
+
+# Training settings
+batch_size = 64 # Epoch 에서 한 번에 학습하지 않고 나누어 학습할 경우의 그 사이즈 
+
+device = 'cuda' if cuda.is_available() else 'cpu' # 사용가능하다면 연산에 GPU 사용 else CPU 사용 
+print(f'Training MNIST Model on {device}\n{"=" * 44}')
+
+# CIFAR10 Dataset -> Image size = 32 x 32 x 3 (RGB Channel)
+train_dataset = datasets.CIFAR10(root='./data',train=True,transform=transforms.ToTensor(),download=True) 
+
+test_dataset = datasets.CIFAR10(root='./data',train=False,transform=transforms.ToTensor())
+
+# Data Loader (Input Pipeline) 
+train_loader = data.DataLoader(dataset=train_dataset,  # train_dataset을 batch size 만큼 불러들여 학습을 진행하게 해주는 dataloader
+                                           batch_size=batch_size,
+                                           shuffle=True) # data 섞기 Yes
+
+test_loader = data.DataLoader(dataset=test_dataset,  # test_dataset을 batch size 만큼 불러들여 학습을 진행하게 해주는 dataloader
+                                          batch_size=batch_size,
+                                          shuffle=False) # data 섞기 No
+
+
+class Net(nn.Module):
+
+    def __init__(self): # Wide and deep  Input data (3x32x32 = 1024) / Output data 10  # Hidden Layer = 3 layers
+        super(Net, self).__init__()
+        self.l1 = nn.Linear(3*32*32, 740)
+        self.l2 = nn.Linear(740, 520)
+        self.l3 = nn.Linear(520, 320)
+        self.l4 = nn.Linear(320, 240)
+        self.l5 = nn.Linear(240, 120)
+        self.l6 = nn.Linear(120,  10)
+
+    def forward(self, x):
+        
+        # Pytorch / Tensorflow 의 view 함수 : 원소의 수를 유지하면서 Tensor의 크기 변경 ==> Numpy의 reshape와 동일 
+        
+        # Flatten the data (n, 1, 28, 28)-> (n, 3x32x32) : 32x32의 3 Channel data n개 (4차원) -> 3x32x32 크기의 data n개 (2차원)
+        x = x.view(-1, 3*32*32)  
+        
+        # Activation function -> relu function 
+        x = F.relu(self.l1(x))
+        x = F.relu(self.l2(x))
+        x = F.relu(self.l3(x))
+        x = F.relu(self.l4(x))
+        x = F.relu(self.l5(x))
+        
+        # 마지막 Layer는 Activation function으로  Softmax 함수를 통과시킬 것이기 때문에 Activation function을 적용하지 않고 return 
+        return self.l6(x)
+
+
+model = Net() # Net class 객체 생성
+model.to(device) # if GPU 사용한다면 GPU에 객체 올리기 
+criterion = nn.CrossEntropyLoss() # CrossEntropy 선언 
+optimizer = optim.SGD(model.parameters(), lr=0.05, momentum=0.5) # 추가적으로 momentum 파라미터를 활용하여 
+
+
+def train(epoch):
+    model.train()  # Model Train mode 설정
+    for batch_idx, (data, target) in enumerate(train_loader): # train loader = (data , target) 
+        data, target = data.to(device), target.to(device) # elements on device 
+        
+        optimizer.zero_grad()
+        output = model(data)
+        loss = criterion(output, target)
+        loss.backward()
+        optimizer.step()
+        
+        if batch_idx % 10 == 0:
+            print('Train Epoch: {} | Batch Status: {}/{} ({:.0f}%) | Loss: {:.6f}'.format(
+                epoch, batch_idx * len(data), len(train_loader.dataset),
+                100. * batch_idx / len(train_loader), loss.item()))
+
+
+def test():
+    model.eval()  # Model Test mode 설정
+    test_loss = 0 # Average Loss를 위해 선언
+    correct = 0   # Accuracy 를 위해 선언
+    for data, target in test_loader:
+        data, target = data.to(device), target.to(device)
+        output = model(data)
+        # sum up batch loss  = reduction = 'sum' 과 동일  
+        test_loss += criterion(output, target).item() # batch 마다 나온 loss를 모두 합산 
+        # get the index of the max
+        pred = output.data.max(1, keepdim=True)[1] # 가장 큰 output의 index return (one-hot과 비슷) # 1 : dimension에 대한 것 
+        correct += pred.eq(target.data.view_as(pred)).cpu().sum() # target과 pred를 비교 
+        # pred.eq(data) -> pred 배열과 data 배열이 서로 일치하는 지를 검사 .sum()을 이용하여 일차하는 것들의 개수를 합 
+        # view_as(pred) -> tensor를 pred와 같은 사이즈의 tensor로 reshape == tensor.view(data.size())
+
+    test_loss /= len(test_loader.dataset) # Average Loss 
+    print(f'===========================\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} '
+          f'({100. * correct / len(test_loader.dataset):.0f}%)')
+
+
+if __name__ == '__main__':
+    
+    # train과 test에 소요되는 시간 계산하는 Main 문
+    since = time.time() # since : 시작 시간 
+    for epoch in range(1, 10):
+        epoch_start = time.time()
+        train(epoch)
+        m, s = divmod(time.time() - epoch_start, 60)
+        print(f'Training time: {m:.0f}m {s:.0f}s')
+        test()
+        m, s = divmod(time.time() - epoch_start, 60)
+        print(f'Testing time: {m:.0f}m {s:.0f}s')
+
+    m, s = divmod(time.time() - since, 60)
+    print(f'Total Time: {m:.0f}m {s:.0f}s\nModel was trained on {device}!')
+      
+      """
+      Training MNIST Model on cpu
+============================================
+Files already downloaded and verified
+Train Epoch: 1 | Batch Status: 0/50000 (0%) | Loss: 2.295208
+Train Epoch: 1 | Batch Status: 320/50000 (1%) | Loss: 2.303654
+Train Epoch: 1 | Batch Status: 640/50000 (1%) | Loss: 2.301949
+Train Epoch: 1 | Batch Status: 960/50000 (2%) | Loss: 2.309347
+Train Epoch: 1 | Batch Status: 1280/50000 (3%) | Loss: 2.291806
+Train Epoch: 1 | Batch Status: 1600/50000 (3%) | Loss: 2.288912
+Train Epoch: 1 | Batch Status: 1920/50000 (4%) | Loss: 2.304569
+Train Epoch: 1 | Batch Status: 2240/50000 (4%) | Loss: 2.299801
+Train Epoch: 1 | Batch Status: 2560/50000 (5%) | Loss: 2.296082
+Train Epoch: 1 | Batch Status: 2880/50000 (6%) | Loss: 2.292239
+Train Epoch: 1 | Batch Status: 3200/50000 (6%) | Loss: 2.302916
+Train Epoch: 1 | Batch Status: 3520/50000 (7%) | Loss: 2.292988
+Train Epoch: 1 | Batch Status: 3840/50000 (8%) | Loss: 2.285565
+Train Epoch: 1 | Batch Status: 4160/50000 (8%) | Loss: 2.290863
+Train Epoch: 1 | Batch Status: 4480/50000 (9%) | Loss: 2.307192
+Train Epoch: 1 | Batch Status: 4800/50000 (10%) | Loss: 2.307520
+Train Epoch: 1 | Batch Status: 5120/50000 (10%) | Loss: 2.301999
+Train Epoch: 1 | Batch Status: 5440/50000 (11%) | Loss: 2.288299
+Train Epoch: 1 | Batch Status: 5760/50000 (12%) | Loss: 2.288370
+Train Epoch: 1 | Batch Status: 6080/50000 (12%) | Loss: 2.297448
+Train Epoch: 1 | Batch Status: 6400/50000 (13%) | Loss: 2.299503
+Train Epoch: 1 | Batch Status: 6720/50000 (13%) | Loss: 2.290753
+Train Epoch: 1 | Batch Status: 7040/50000 (14%) | Loss: 2.284783
+Train Epoch: 1 | Batch Status: 7360/50000 (15%) | Loss: 2.290630
+Train Epoch: 1 | Batch Status: 7680/50000 (15%) | Loss: 2.281973
+Train Epoch: 1 | Batch Status: 8000/50000 (16%) | Loss: 2.283658
+Train Epoch: 1 | Batch Status: 8320/50000 (17%) | Loss: 2.276326
+Train Epoch: 1 | Batch Status: 8640/50000 (17%) | Loss: 2.267683
+Train Epoch: 1 | Batch Status: 8960/50000 (18%) | Loss: 2.265696
+Train Epoch: 1 | Batch Status: 9280/50000 (19%) | Loss: 2.277653
+Train Epoch: 1 | Batch Status: 9600/50000 (19%) | Loss: 2.243590
+Train Epoch: 1 | Batch Status: 9920/50000 (20%) | Loss: 2.224094
+Train Epoch: 1 | Batch Status: 10240/50000 (20%) | Loss: 2.206562
+Train Epoch: 1 | Batch Status: 10560/50000 (21%) | Loss: 2.214734
+Train Epoch: 1 | Batch Status: 10880/50000 (22%) | Loss: 2.161071
+Train Epoch: 1 | Batch Status: 11200/50000 (22%) | Loss: 2.050127
+Train Epoch: 1 | Batch Status: 11520/50000 (23%) | Loss: 2.140685
+Train Epoch: 1 | Batch Status: 11840/50000 (24%) | Loss: 2.052064
+Train Epoch: 1 | Batch Status: 12160/50000 (24%) | Loss: 2.164500
+Train Epoch: 1 | Batch Status: 12480/50000 (25%) | Loss: 2.041750
+Train Epoch: 1 | Batch Status: 12800/50000 (26%) | Loss: 1.966188
+Train Epoch: 1 | Batch Status: 13120/50000 (26%) | Loss: 2.062194
+Train Epoch: 1 | Batch Status: 13440/50000 (27%) | Loss: 2.104458
+Train Epoch: 1 | Batch Status: 13760/50000 (28%) | Loss: 2.151229
+Train Epoch: 1 | Batch Status: 14080/50000 (28%) | Loss: 2.131083
+Train Epoch: 1 | Batch Status: 14400/50000 (29%) | Loss: 2.116780
+Train Epoch: 1 | Batch Status: 14720/50000 (29%) | Loss: 2.197915
+Train Epoch: 1 | Batch Status: 15040/50000 (30%) | Loss: 2.017015
+Train Epoch: 1 | Batch Status: 15360/50000 (31%) | Loss: 2.209528
+Train Epoch: 1 | Batch Status: 15680/50000 (31%) | Loss: 1.878534
+Train Epoch: 1 | Batch Status: 16000/50000 (32%) | Loss: 1.998994
+Train Epoch: 1 | Batch Status: 16320/50000 (33%) | Loss: 2.128230
+Train Epoch: 1 | Batch Status: 16640/50000 (33%) | Loss: 2.047270
+Train Epoch: 1 | Batch Status: 16960/50000 (34%) | Loss: 1.902904
+Train Epoch: 1 | Batch Status: 17280/50000 (35%) | Loss: 2.212505
+Train Epoch: 1 | Batch Status: 17600/50000 (35%) | Loss: 2.177828
+Train Epoch: 1 | Batch Status: 17920/50000 (36%) | Loss: 1.987842
+Train Epoch: 1 | Batch Status: 18240/50000 (36%) | Loss: 2.363655
+Train Epoch: 1 | Batch Status: 18560/50000 (37%) | Loss: 2.174579
+Train Epoch: 1 | Batch Status: 18880/50000 (38%) | Loss: 2.081429
+Train Epoch: 1 | Batch Status: 19200/50000 (38%) | Loss: 2.054599
+Train Epoch: 1 | Batch Status: 19520/50000 (39%) | Loss: 2.083775
+Train Epoch: 1 | Batch Status: 19840/50000 (40%) | Loss: 1.938491
+Train Epoch: 1 | Batch Status: 20160/50000 (40%) | Loss: 2.338892
+Train Epoch: 1 | Batch Status: 20480/50000 (41%) | Loss: 2.107424
+Train Epoch: 1 | Batch Status: 20800/50000 (42%) | Loss: 2.061773
+Train Epoch: 1 | Batch Status: 21120/50000 (42%) | Loss: 2.061137
+Train Epoch: 1 | Batch Status: 21440/50000 (43%) | Loss: 2.088257
+Train Epoch: 1 | Batch Status: 21760/50000 (44%) | Loss: 1.951203
+Train Epoch: 1 | Batch Status: 22080/50000 (44%) | Loss: 2.008829
+Train Epoch: 1 | Batch Status: 22400/50000 (45%) | Loss: 2.115421
+Train Epoch: 1 | Batch Status: 22720/50000 (45%) | Loss: 2.372393
+Train Epoch: 1 | Batch Status: 23040/50000 (46%) | Loss: 2.055859
+Train Epoch: 1 | Batch Status: 23360/50000 (47%) | Loss: 2.076600
+Train Epoch: 1 | Batch Status: 23680/50000 (47%) | Loss: 2.053490
+Train Epoch: 1 | Batch Status: 24000/50000 (48%) | Loss: 2.221368
+Train Epoch: 1 | Batch Status: 24320/50000 (49%) | Loss: 2.231472
+Train Epoch: 1 | Batch Status: 24640/50000 (49%) | Loss: 1.997334
+Train Epoch: 1 | Batch Status: 24960/50000 (50%) | Loss: 2.057096
+Train Epoch: 1 | Batch Status: 25280/50000 (51%) | Loss: 1.742066
+Train Epoch: 1 | Batch Status: 25600/50000 (51%) | Loss: 1.981812
+Train Epoch: 1 | Batch Status: 25920/50000 (52%) | Loss: 2.081878
+Train Epoch: 1 | Batch Status: 26240/50000 (52%) | Loss: 2.067136
+Train Epoch: 1 | Batch Status: 26560/50000 (53%) | Loss: 2.034330
+Train Epoch: 1 | Batch Status: 26880/50000 (54%) | Loss: 2.007099
+Train Epoch: 1 | Batch Status: 27200/50000 (54%) | Loss: 1.786774
+Train Epoch: 1 | Batch Status: 27520/50000 (55%) | Loss: 2.112384
+Train Epoch: 1 | Batch Status: 27840/50000 (56%) | Loss: 1.949108
+Train Epoch: 1 | Batch Status: 28160/50000 (56%) | Loss: 1.895286
+Train Epoch: 1 | Batch Status: 28480/50000 (57%) | Loss: 1.858715
+Train Epoch: 1 | Batch Status: 28800/50000 (58%) | Loss: 2.117046
+Train Epoch: 1 | Batch Status: 29120/50000 (58%) | Loss: 1.940526
+Train Epoch: 1 | Batch Status: 29440/50000 (59%) | Loss: 1.844792
+Train Epoch: 1 | Batch Status: 29760/50000 (60%) | Loss: 2.024096
+Train Epoch: 1 | Batch Status: 30080/50000 (60%) | Loss: 1.943789
+Train Epoch: 1 | Batch Status: 30400/50000 (61%) | Loss: 1.985372
+Train Epoch: 1 | Batch Status: 30720/50000 (61%) | Loss: 1.886904
+Train Epoch: 1 | Batch Status: 31040/50000 (62%) | Loss: 2.073079
+Train Epoch: 1 | Batch Status: 31360/50000 (63%) | Loss: 1.798530
+Train Epoch: 1 | Batch Status: 31680/50000 (63%) | Loss: 1.893632
+Train Epoch: 1 | Batch Status: 32000/50000 (64%) | Loss: 2.254454
+Train Epoch: 1 | Batch Status: 32320/50000 (65%) | Loss: 2.269156
+Train Epoch: 1 | Batch Status: 32640/50000 (65%) | Loss: 2.028257
+Train Epoch: 1 | Batch Status: 32960/50000 (66%) | Loss: 1.909083
+Train Epoch: 1 | Batch Status: 33280/50000 (67%) | Loss: 2.028363
+Train Epoch: 1 | Batch Status: 33600/50000 (67%) | Loss: 1.804095
+Train Epoch: 1 | Batch Status: 33920/50000 (68%) | Loss: 1.767065
+Train Epoch: 1 | Batch Status: 34240/50000 (68%) | Loss: 2.045415
+Train Epoch: 1 | Batch Status: 34560/50000 (69%) | Loss: 1.816926
+Train Epoch: 1 | Batch Status: 34880/50000 (70%) | Loss: 2.258049
+Train Epoch: 1 | Batch Status: 35200/50000 (70%) | Loss: 1.884793
+Train Epoch: 1 | Batch Status: 35520/50000 (71%) | Loss: 2.034771
+Train Epoch: 1 | Batch Status: 35840/50000 (72%) | Loss: 1.885695
+Train Epoch: 1 | Batch Status: 36160/50000 (72%) | Loss: 1.692370
+Train Epoch: 1 | Batch Status: 36480/50000 (73%) | Loss: 1.833232
+Train Epoch: 1 | Batch Status: 36800/50000 (74%) | Loss: 1.888936
+Train Epoch: 1 | Batch Status: 37120/50000 (74%) | Loss: 1.976856
+Train Epoch: 1 | Batch Status: 37440/50000 (75%) | Loss: 1.903933
+Train Epoch: 1 | Batch Status: 37760/50000 (75%) | Loss: 1.981470
+Train Epoch: 1 | Batch Status: 38080/50000 (76%) | Loss: 2.100578
+Train Epoch: 1 | Batch Status: 38400/50000 (77%) | Loss: 1.980277
+Train Epoch: 1 | Batch Status: 38720/50000 (77%) | Loss: 1.946897
+Train Epoch: 1 | Batch Status: 39040/50000 (78%) | Loss: 1.851029
+Train Epoch: 1 | Batch Status: 39360/50000 (79%) | Loss: 2.069303
+Train Epoch: 1 | Batch Status: 39680/50000 (79%) | Loss: 1.967121
+Train Epoch: 1 | Batch Status: 40000/50000 (80%) | Loss: 1.643358
+Train Epoch: 1 | Batch Status: 40320/50000 (81%) | Loss: 1.934513
+Train Epoch: 1 | Batch Status: 40640/50000 (81%) | Loss: 1.964590
+Train Epoch: 1 | Batch Status: 40960/50000 (82%) | Loss: 1.805548
+Train Epoch: 1 | Batch Status: 41280/50000 (83%) | Loss: 1.852963
+Train Epoch: 1 | Batch Status: 41600/50000 (83%) | Loss: 1.923370
+Train Epoch: 1 | Batch Status: 41920/50000 (84%) | Loss: 1.829766
+Train Epoch: 1 | Batch Status: 42240/50000 (84%) | Loss: 1.836286
+Train Epoch: 1 | Batch Status: 42560/50000 (85%) | Loss: 1.946058
+Train Epoch: 1 | Batch Status: 42880/50000 (86%) | Loss: 1.798259
+Train Epoch: 1 | Batch Status: 43200/50000 (86%) | Loss: 1.815495
+Train Epoch: 1 | Batch Status: 43520/50000 (87%) | Loss: 1.985782
+Train Epoch: 1 | Batch Status: 43840/50000 (88%) | Loss: 1.986836
+Train Epoch: 1 | Batch Status: 44160/50000 (88%) | Loss: 1.896392
+Train Epoch: 1 | Batch Status: 44480/50000 (89%) | Loss: 1.827855
+Train Epoch: 1 | Batch Status: 44800/50000 (90%) | Loss: 1.975844
+Train Epoch: 1 | Batch Status: 45120/50000 (90%) | Loss: 1.895751
+Train Epoch: 1 | Batch Status: 45440/50000 (91%) | Loss: 2.044068
+Train Epoch: 1 | Batch Status: 45760/50000 (91%) | Loss: 1.770909
+Train Epoch: 1 | Batch Status: 46080/50000 (92%) | Loss: 1.848612
+Train Epoch: 1 | Batch Status: 46400/50000 (93%) | Loss: 1.872749
+Train Epoch: 1 | Batch Status: 46720/50000 (93%) | Loss: 1.696332
+Train Epoch: 1 | Batch Status: 47040/50000 (94%) | Loss: 1.913712
+Train Epoch: 1 | Batch Status: 47360/50000 (95%) | Loss: 2.034994
+Train Epoch: 1 | Batch Status: 47680/50000 (95%) | Loss: 1.711219
+Train Epoch: 1 | Batch Status: 48000/50000 (96%) | Loss: 1.730138
+Train Epoch: 1 | Batch Status: 48320/50000 (97%) | Loss: 1.831940
+Train Epoch: 1 | Batch Status: 48640/50000 (97%) | Loss: 1.822420
+Train Epoch: 1 | Batch Status: 48960/50000 (98%) | Loss: 1.898701
+Train Epoch: 1 | Batch Status: 49280/50000 (99%) | Loss: 2.026868
+Train Epoch: 1 | Batch Status: 49600/50000 (99%) | Loss: 1.847128
+Train Epoch: 1 | Batch Status: 49920/50000 (100%) | Loss: 1.925906
+Training time: 0m 31s
+===========================
+Test set: Average loss: 0.0584, Accuracy: 3066/10000 (31%)
+Testing time: 0m 33s
+Train Epoch: 2 | Batch Status: 0/50000 (0%) | Loss: 1.951756
+Train Epoch: 2 | Batch Status: 320/50000 (1%) | Loss: 1.802772
+Train Epoch: 2 | Batch Status: 640/50000 (1%) | Loss: 1.845914
+Train Epoch: 2 | Batch Status: 960/50000 (2%) | Loss: 1.922154
+Train Epoch: 2 | Batch Status: 1280/50000 (3%) | Loss: 1.781707
+Train Epoch: 2 | Batch Status: 1600/50000 (3%) | Loss: 1.717791
+Train Epoch: 2 | Batch Status: 1920/50000 (4%) | Loss: 2.019728
+Train Epoch: 2 | Batch Status: 2240/50000 (4%) | Loss: 1.866827
+Train Epoch: 2 | Batch Status: 2560/50000 (5%) | Loss: 2.160389
+Train Epoch: 2 | Batch Status: 2880/50000 (6%) | Loss: 1.838742
+Train Epoch: 2 | Batch Status: 3200/50000 (6%) | Loss: 1.588629
+Train Epoch: 2 | Batch Status: 3520/50000 (7%) | Loss: 2.248099
+Train Epoch: 2 | Batch Status: 3840/50000 (8%) | Loss: 1.750769
+Train Epoch: 2 | Batch Status: 4160/50000 (8%) | Loss: 1.894045
+Train Epoch: 2 | Batch Status: 4480/50000 (9%) | Loss: 1.732946
+Train Epoch: 2 | Batch Status: 4800/50000 (10%) | Loss: 2.102215
+Train Epoch: 2 | Batch Status: 5120/50000 (10%) | Loss: 2.024898
+Train Epoch: 2 | Batch Status: 5440/50000 (11%) | Loss: 1.720158
+Train Epoch: 2 | Batch Status: 5760/50000 (12%) | Loss: 2.031178
+Train Epoch: 2 | Batch Status: 6080/50000 (12%) | Loss: 1.917526
+Train Epoch: 2 | Batch Status: 6400/50000 (13%) | Loss: 1.911983
+Train Epoch: 2 | Batch Status: 6720/50000 (13%) | Loss: 1.539027
+Train Epoch: 2 | Batch Status: 7040/50000 (14%) | Loss: 1.709032
+Train Epoch: 2 | Batch Status: 7360/50000 (15%) | Loss: 1.533068
+Train Epoch: 2 | Batch Status: 7680/50000 (15%) | Loss: 1.782327
+Train Epoch: 2 | Batch Status: 8000/50000 (16%) | Loss: 1.902053
+Train Epoch: 2 | Batch Status: 8320/50000 (17%) | Loss: 1.762545
+Train Epoch: 2 | Batch Status: 8640/50000 (17%) | Loss: 1.883991
+Train Epoch: 2 | Batch Status: 8960/50000 (18%) | Loss: 1.678565
+Train Epoch: 2 | Batch Status: 9280/50000 (19%) | Loss: 1.711124
+Train Epoch: 2 | Batch Status: 9600/50000 (19%) | Loss: 1.824013
+Train Epoch: 2 | Batch Status: 9920/50000 (20%) | Loss: 1.839809
+Train Epoch: 2 | Batch Status: 10240/50000 (20%) | Loss: 1.987212
+Train Epoch: 2 | Batch Status: 10560/50000 (21%) | Loss: 2.125682
+Train Epoch: 2 | Batch Status: 10880/50000 (22%) | Loss: 1.792071
+Train Epoch: 2 | Batch Status: 11200/50000 (22%) | Loss: 1.825471
+Train Epoch: 2 | Batch Status: 11520/50000 (23%) | Loss: 1.849194
+Train Epoch: 2 | Batch Status: 11840/50000 (24%) | Loss: 1.919983
+Train Epoch: 2 | Batch Status: 12160/50000 (24%) | Loss: 1.773146
+Train Epoch: 2 | Batch Status: 12480/50000 (25%) | Loss: 1.710214
+Train Epoch: 2 | Batch Status: 12800/50000 (26%) | Loss: 1.693334
+Train Epoch: 2 | Batch Status: 13120/50000 (26%) | Loss: 1.966759
+Train Epoch: 2 | Batch Status: 13440/50000 (27%) | Loss: 1.910027
+Train Epoch: 2 | Batch Status: 13760/50000 (28%) | Loss: 1.688689
+Train Epoch: 2 | Batch Status: 14080/50000 (28%) | Loss: 1.655554
+Train Epoch: 2 | Batch Status: 14400/50000 (29%) | Loss: 1.930662
+Train Epoch: 2 | Batch Status: 14720/50000 (29%) | Loss: 1.747986
+Train Epoch: 2 | Batch Status: 15040/50000 (30%) | Loss: 1.834273
+Train Epoch: 2 | Batch Status: 15360/50000 (31%) | Loss: 1.779830
+Train Epoch: 2 | Batch Status: 15680/50000 (31%) | Loss: 2.219776
+Train Epoch: 2 | Batch Status: 16000/50000 (32%) | Loss: 1.996149
+Train Epoch: 2 | Batch Status: 16320/50000 (33%) | Loss: 2.066050
+Train Epoch: 2 | Batch Status: 16640/50000 (33%) | Loss: 1.718983
+Train Epoch: 2 | Batch Status: 16960/50000 (34%) | Loss: 1.599936
+Train Epoch: 2 | Batch Status: 17280/50000 (35%) | Loss: 1.832427
+Train Epoch: 2 | Batch Status: 17600/50000 (35%) | Loss: 1.757343
+Train Epoch: 2 | Batch Status: 17920/50000 (36%) | Loss: 1.878718
+Train Epoch: 2 | Batch Status: 18240/50000 (36%) | Loss: 1.934666
+Train Epoch: 2 | Batch Status: 18560/50000 (37%) | Loss: 1.715816
+Train Epoch: 2 | Batch Status: 18880/50000 (38%) | Loss: 1.817672
+Train Epoch: 2 | Batch Status: 19200/50000 (38%) | Loss: 1.812860
+Train Epoch: 2 | Batch Status: 19520/50000 (39%) | Loss: 1.889487
+Train Epoch: 2 | Batch Status: 19840/50000 (40%) | Loss: 1.828811
+Train Epoch: 2 | Batch Status: 20160/50000 (40%) | Loss: 1.856569
+Train Epoch: 2 | Batch Status: 20480/50000 (41%) | Loss: 1.614811
+Train Epoch: 2 | Batch Status: 20800/50000 (42%) | Loss: 1.820284
+Train Epoch: 2 | Batch Status: 21120/50000 (42%) | Loss: 1.509033
+Train Epoch: 2 | Batch Status: 21440/50000 (43%) | Loss: 1.784195
+Train Epoch: 2 | Batch Status: 21760/50000 (44%) | Loss: 1.814818
+Train Epoch: 2 | Batch Status: 22080/50000 (44%) | Loss: 1.784190
+Train Epoch: 2 | Batch Status: 22400/50000 (45%) | Loss: 1.676264
+Train Epoch: 2 | Batch Status: 22720/50000 (45%) | Loss: 1.789491
+Train Epoch: 2 | Batch Status: 23040/50000 (46%) | Loss: 1.807450
+Train Epoch: 2 | Batch Status: 23360/50000 (47%) | Loss: 1.649401
+Train Epoch: 2 | Batch Status: 23680/50000 (47%) | Loss: 1.516033
+Train Epoch: 2 | Batch Status: 24000/50000 (48%) | Loss: 1.916003
+Train Epoch: 2 | Batch Status: 24320/50000 (49%) | Loss: 2.211186
+Train Epoch: 2 | Batch Status: 24640/50000 (49%) | Loss: 1.646494
+Train Epoch: 2 | Batch Status: 24960/50000 (50%) | Loss: 1.761763
+Train Epoch: 2 | Batch Status: 25280/50000 (51%) | Loss: 1.923302
+Train Epoch: 2 | Batch Status: 25600/50000 (51%) | Loss: 1.711396
+Train Epoch: 2 | Batch Status: 25920/50000 (52%) | Loss: 1.638571
+Train Epoch: 2 | Batch Status: 26240/50000 (52%) | Loss: 1.759003
+Train Epoch: 2 | Batch Status: 26560/50000 (53%) | Loss: 1.970611
+Train Epoch: 2 | Batch Status: 26880/50000 (54%) | Loss: 1.776436
+Train Epoch: 2 | Batch Status: 27200/50000 (54%) | Loss: 1.747433
+Train Epoch: 2 | Batch Status: 27520/50000 (55%) | Loss: 1.646790
+Train Epoch: 2 | Batch Status: 27840/50000 (56%) | Loss: 1.711251
+Train Epoch: 2 | Batch Status: 28160/50000 (56%) | Loss: 1.824147
+Train Epoch: 2 | Batch Status: 28480/50000 (57%) | Loss: 1.502378
+Train Epoch: 2 | Batch Status: 28800/50000 (58%) | Loss: 1.786342
+Train Epoch: 2 | Batch Status: 29120/50000 (58%) | Loss: 1.915258
+Train Epoch: 2 | Batch Status: 29440/50000 (59%) | Loss: 1.521019
+Train Epoch: 2 | Batch Status: 29760/50000 (60%) | Loss: 1.850295
+Train Epoch: 2 | Batch Status: 30080/50000 (60%) | Loss: 1.766412
+Train Epoch: 2 | Batch Status: 30400/50000 (61%) | Loss: 1.699839
+Train Epoch: 2 | Batch Status: 30720/50000 (61%) | Loss: 1.619543
+Train Epoch: 2 | Batch Status: 31040/50000 (62%) | Loss: 1.596596
+Train Epoch: 2 | Batch Status: 31360/50000 (63%) | Loss: 1.678896
+Train Epoch: 2 | Batch Status: 31680/50000 (63%) | Loss: 1.880953
+Train Epoch: 2 | Batch Status: 32000/50000 (64%) | Loss: 1.920196
+Train Epoch: 2 | Batch Status: 32320/50000 (65%) | Loss: 1.730137
+Train Epoch: 2 | Batch Status: 32640/50000 (65%) | Loss: 1.932922
+Train Epoch: 2 | Batch Status: 32960/50000 (66%) | Loss: 2.064538
+Train Epoch: 2 | Batch Status: 33280/50000 (67%) | Loss: 1.843485
+Train Epoch: 2 | Batch Status: 33600/50000 (67%) | Loss: 1.531855
+Train Epoch: 2 | Batch Status: 33920/50000 (68%) | Loss: 2.087432
+Train Epoch: 2 | Batch Status: 34240/50000 (68%) | Loss: 1.699957
+Train Epoch: 2 | Batch Status: 34560/50000 (69%) | Loss: 1.716510
+Train Epoch: 2 | Batch Status: 34880/50000 (70%) | Loss: 1.481686
+Train Epoch: 2 | Batch Status: 35200/50000 (70%) | Loss: 1.607456
+Train Epoch: 2 | Batch Status: 35520/50000 (71%) | Loss: 1.967700
+Train Epoch: 2 | Batch Status: 35840/50000 (72%) | Loss: 1.623654
+Train Epoch: 2 | Batch Status: 36160/50000 (72%) | Loss: 1.667810
+Train Epoch: 2 | Batch Status: 36480/50000 (73%) | Loss: 1.774913
+Train Epoch: 2 | Batch Status: 36800/50000 (74%) | Loss: 1.584049
+Train Epoch: 2 | Batch Status: 37120/50000 (74%) | Loss: 1.643070
+Train Epoch: 2 | Batch Status: 37440/50000 (75%) | Loss: 2.118986
+Train Epoch: 2 | Batch Status: 37760/50000 (75%) | Loss: 1.818606
+Train Epoch: 2 | Batch Status: 38080/50000 (76%) | Loss: 2.034456
+Train Epoch: 2 | Batch Status: 38400/50000 (77%) | Loss: 1.864540
+Train Epoch: 2 | Batch Status: 38720/50000 (77%) | Loss: 1.679647
+Train Epoch: 2 | Batch Status: 39040/50000 (78%) | Loss: 2.224522
+Train Epoch: 2 | Batch Status: 39360/50000 (79%) | Loss: 1.468310
+Train Epoch: 2 | Batch Status: 39680/50000 (79%) | Loss: 1.831506
+Train Epoch: 2 | Batch Status: 40000/50000 (80%) | Loss: 1.515821
+Train Epoch: 2 | Batch Status: 40320/50000 (81%) | Loss: 1.583257
+Train Epoch: 2 | Batch Status: 40640/50000 (81%) | Loss: 1.666951
+Train Epoch: 2 | Batch Status: 40960/50000 (82%) | Loss: 1.784573
+Train Epoch: 2 | Batch Status: 41280/50000 (83%) | Loss: 1.622161
+Train Epoch: 2 | Batch Status: 41600/50000 (83%) | Loss: 1.559947
+Train Epoch: 2 | Batch Status: 41920/50000 (84%) | Loss: 1.722726
+Train Epoch: 2 | Batch Status: 42240/50000 (84%) | Loss: 1.392135
+Train Epoch: 2 | Batch Status: 42560/50000 (85%) | Loss: 1.403266
+Train Epoch: 2 | Batch Status: 42880/50000 (86%) | Loss: 1.913418
+Train Epoch: 2 | Batch Status: 43200/50000 (86%) | Loss: 2.005936
+Train Epoch: 2 | Batch Status: 43520/50000 (87%) | Loss: 1.538973
+Train Epoch: 2 | Batch Status: 43840/50000 (88%) | Loss: 1.500735
+Train Epoch: 2 | Batch Status: 44160/50000 (88%) | Loss: 1.527977
+Train Epoch: 2 | Batch Status: 44480/50000 (89%) | Loss: 1.614409
+Train Epoch: 2 | Batch Status: 44800/50000 (90%) | Loss: 1.703562
+Train Epoch: 2 | Batch Status: 45120/50000 (90%) | Loss: 1.937037
+Train Epoch: 2 | Batch Status: 45440/50000 (91%) | Loss: 1.682061
+Train Epoch: 2 | Batch Status: 45760/50000 (91%) | Loss: 2.071102
+Train Epoch: 2 | Batch Status: 46080/50000 (92%) | Loss: 1.692713
+Train Epoch: 2 | Batch Status: 46400/50000 (93%) | Loss: 1.676787
+Train Epoch: 2 | Batch Status: 46720/50000 (93%) | Loss: 1.664984
+Train Epoch: 2 | Batch Status: 47040/50000 (94%) | Loss: 1.528091
+Train Epoch: 2 | Batch Status: 47360/50000 (95%) | Loss: 1.738294
+Train Epoch: 2 | Batch Status: 47680/50000 (95%) | Loss: 1.781110
+Train Epoch: 2 | Batch Status: 48000/50000 (96%) | Loss: 1.611888
+Train Epoch: 2 | Batch Status: 48320/50000 (97%) | Loss: 1.606176
+Train Epoch: 2 | Batch Status: 48640/50000 (97%) | Loss: 1.552309
+Train Epoch: 2 | Batch Status: 48960/50000 (98%) | Loss: 1.828831
+Train Epoch: 2 | Batch Status: 49280/50000 (99%) | Loss: 1.932662
+Train Epoch: 2 | Batch Status: 49600/50000 (99%) | Loss: 2.087019
+Train Epoch: 2 | Batch Status: 49920/50000 (100%) | Loss: 1.717436
+Training time: 0m 33s
+===========================
+Test set: Average loss: 0.0532, Accuracy: 3803/10000 (38%)
+Testing time: 0m 35s
+Train Epoch: 3 | Batch Status: 0/50000 (0%) | Loss: 1.858210
+Train Epoch: 3 | Batch Status: 320/50000 (1%) | Loss: 1.909639
+Train Epoch: 3 | Batch Status: 640/50000 (1%) | Loss: 1.921052
+Train Epoch: 3 | Batch Status: 960/50000 (2%) | Loss: 1.763485
+Train Epoch: 3 | Batch Status: 1280/50000 (3%) | Loss: 1.574634
+Train Epoch: 3 | Batch Status: 1600/50000 (3%) | Loss: 1.862923
+Train Epoch: 3 | Batch Status: 1920/50000 (4%) | Loss: 1.810061
+Train Epoch: 3 | Batch Status: 2240/50000 (4%) | Loss: 1.865912
+Train Epoch: 3 | Batch Status: 2560/50000 (5%) | Loss: 1.728247
+Train Epoch: 3 | Batch Status: 2880/50000 (6%) | Loss: 1.831328
+Train Epoch: 3 | Batch Status: 3200/50000 (6%) | Loss: 1.632745
+Train Epoch: 3 | Batch Status: 3520/50000 (7%) | Loss: 1.786563
+Train Epoch: 3 | Batch Status: 3840/50000 (8%) | Loss: 1.755168
+Train Epoch: 3 | Batch Status: 4160/50000 (8%) | Loss: 1.904484
+Train Epoch: 3 | Batch Status: 4480/50000 (9%) | Loss: 1.823709
+Train Epoch: 3 | Batch Status: 4800/50000 (10%) | Loss: 1.625289
+Train Epoch: 3 | Batch Status: 5120/50000 (10%) | Loss: 1.615633
+Train Epoch: 3 | Batch Status: 5440/50000 (11%) | Loss: 1.564856
+Train Epoch: 3 | Batch Status: 5760/50000 (12%) | Loss: 1.542552
+Train Epoch: 3 | Batch Status: 6080/50000 (12%) | Loss: 1.739791
+Train Epoch: 3 | Batch Status: 6400/50000 (13%) | Loss: 1.839620
+Train Epoch: 3 | Batch Status: 6720/50000 (13%) | Loss: 1.632308
+Train Epoch: 3 | Batch Status: 7040/50000 (14%) | Loss: 1.965640
+Train Epoch: 3 | Batch Status: 7360/50000 (15%) | Loss: 1.787256
+Train Epoch: 3 | Batch Status: 7680/50000 (15%) | Loss: 1.775217
+Train Epoch: 3 | Batch Status: 8000/50000 (16%) | Loss: 1.598801
+Train Epoch: 3 | Batch Status: 8320/50000 (17%) | Loss: 1.621954
+Train Epoch: 3 | Batch Status: 8640/50000 (17%) | Loss: 1.344543
+Train Epoch: 3 | Batch Status: 8960/50000 (18%) | Loss: 1.800724
+Train Epoch: 3 | Batch Status: 9280/50000 (19%) | Loss: 1.709842
+Train Epoch: 3 | Batch Status: 9600/50000 (19%) | Loss: 1.612334
+Train Epoch: 3 | Batch Status: 9920/50000 (20%) | Loss: 1.573916
+Train Epoch: 3 | Batch Status: 10240/50000 (20%) | Loss: 1.610196
+Train Epoch: 3 | Batch Status: 10560/50000 (21%) | Loss: 1.925102
+Train Epoch: 3 | Batch Status: 10880/50000 (22%) | Loss: 1.863106
+Train Epoch: 3 | Batch Status: 11200/50000 (22%) | Loss: 1.851382
+Train Epoch: 3 | Batch Status: 11520/50000 (23%) | Loss: 1.779277
+Train Epoch: 3 | Batch Status: 11840/50000 (24%) | Loss: 2.059052
+Train Epoch: 3 | Batch Status: 12160/50000 (24%) | Loss: 1.595055
+Train Epoch: 3 | Batch Status: 12480/50000 (25%) | Loss: 1.477746
+Train Epoch: 3 | Batch Status: 12800/50000 (26%) | Loss: 1.807863
+Train Epoch: 3 | Batch Status: 13120/50000 (26%) | Loss: 1.639462
+Train Epoch: 3 | Batch Status: 13440/50000 (27%) | Loss: 1.664868
+Train Epoch: 3 | Batch Status: 13760/50000 (28%) | Loss: 1.788649
+Train Epoch: 3 | Batch Status: 14080/50000 (28%) | Loss: 1.498733
+Train Epoch: 3 | Batch Status: 14400/50000 (29%) | Loss: 1.735050
+Train Epoch: 3 | Batch Status: 14720/50000 (29%) | Loss: 1.377927
+Train Epoch: 3 | Batch Status: 15040/50000 (30%) | Loss: 1.866527
+Train Epoch: 3 | Batch Status: 15360/50000 (31%) | Loss: 1.552229
+Train Epoch: 3 | Batch Status: 15680/50000 (31%) | Loss: 1.847600
+Train Epoch: 3 | Batch Status: 16000/50000 (32%) | Loss: 1.788038
+Train Epoch: 3 | Batch Status: 16320/50000 (33%) | Loss: 1.789549
+Train Epoch: 3 | Batch Status: 16640/50000 (33%) | Loss: 2.137634
+Train Epoch: 3 | Batch Status: 16960/50000 (34%) | Loss: 1.708486
+Train Epoch: 3 | Batch Status: 17280/50000 (35%) | Loss: 1.666921
+Train Epoch: 3 | Batch Status: 17600/50000 (35%) | Loss: 1.587007
+Train Epoch: 3 | Batch Status: 17920/50000 (36%) | Loss: 1.900746
+Train Epoch: 3 | Batch Status: 18240/50000 (36%) | Loss: 1.818609
+Train Epoch: 3 | Batch Status: 18560/50000 (37%) | Loss: 1.325444
+Train Epoch: 3 | Batch Status: 18880/50000 (38%) | Loss: 1.538009
+Train Epoch: 3 | Batch Status: 19200/50000 (38%) | Loss: 1.794136
+Train Epoch: 3 | Batch Status: 19520/50000 (39%) | Loss: 1.683434
+Train Epoch: 3 | Batch Status: 19840/50000 (40%) | Loss: 1.792205
+Train Epoch: 3 | Batch Status: 20160/50000 (40%) | Loss: 1.700872
+Train Epoch: 3 | Batch Status: 20480/50000 (41%) | Loss: 1.445300
+Train Epoch: 3 | Batch Status: 20800/50000 (42%) | Loss: 1.627760
+Train Epoch: 3 | Batch Status: 21120/50000 (42%) | Loss: 1.636923
+Train Epoch: 3 | Batch Status: 21440/50000 (43%) | Loss: 1.475332
+Train Epoch: 3 | Batch Status: 21760/50000 (44%) | Loss: 1.828938
+Train Epoch: 3 | Batch Status: 22080/50000 (44%) | Loss: 1.516527
+Train Epoch: 3 | Batch Status: 22400/50000 (45%) | Loss: 1.732314
+Train Epoch: 3 | Batch Status: 22720/50000 (45%) | Loss: 1.676038
+Train Epoch: 3 | Batch Status: 23040/50000 (46%) | Loss: 1.854965
+Train Epoch: 3 | Batch Status: 23360/50000 (47%) | Loss: 1.767098
+Train Epoch: 3 | Batch Status: 23680/50000 (47%) | Loss: 1.863977
+Train Epoch: 3 | Batch Status: 24000/50000 (48%) | Loss: 1.726936
+Train Epoch: 3 | Batch Status: 24320/50000 (49%) | Loss: 1.529388
+Train Epoch: 3 | Batch Status: 24640/50000 (49%) | Loss: 1.708325
+Train Epoch: 3 | Batch Status: 24960/50000 (50%) | Loss: 1.770441
+Train Epoch: 3 | Batch Status: 25280/50000 (51%) | Loss: 1.821492
+Train Epoch: 3 | Batch Status: 25600/50000 (51%) | Loss: 1.833202
+Train Epoch: 3 | Batch Status: 25920/50000 (52%) | Loss: 1.383523
+Train Epoch: 3 | Batch Status: 26240/50000 (52%) | Loss: 1.824251
+Train Epoch: 3 | Batch Status: 26560/50000 (53%) | Loss: 1.862918
+Train Epoch: 3 | Batch Status: 26880/50000 (54%) | Loss: 1.656794
+Train Epoch: 3 | Batch Status: 27200/50000 (54%) | Loss: 1.663495
+Train Epoch: 3 | Batch Status: 27520/50000 (55%) | Loss: 1.536520
+Train Epoch: 3 | Batch Status: 27840/50000 (56%) | Loss: 1.670016
+Train Epoch: 3 | Batch Status: 28160/50000 (56%) | Loss: 1.565127
+Train Epoch: 3 | Batch Status: 28480/50000 (57%) | Loss: 1.750523
+Train Epoch: 3 | Batch Status: 28800/50000 (58%) | Loss: 1.680807
+Train Epoch: 3 | Batch Status: 29120/50000 (58%) | Loss: 1.881532
+Train Epoch: 3 | Batch Status: 29440/50000 (59%) | Loss: 1.856661
+Train Epoch: 3 | Batch Status: 29760/50000 (60%) | Loss: 1.616193
+Train Epoch: 3 | Batch Status: 30080/50000 (60%) | Loss: 1.684830
+Train Epoch: 3 | Batch Status: 30400/50000 (61%) | Loss: 1.420921
+Train Epoch: 3 | Batch Status: 30720/50000 (61%) | Loss: 1.539421
+Train Epoch: 3 | Batch Status: 31040/50000 (62%) | Loss: 1.778308
+Train Epoch: 3 | Batch Status: 31360/50000 (63%) | Loss: 1.559353
+Train Epoch: 3 | Batch Status: 31680/50000 (63%) | Loss: 2.008459
+Train Epoch: 3 | Batch Status: 32000/50000 (64%) | Loss: 1.899585
+Train Epoch: 3 | Batch Status: 32320/50000 (65%) | Loss: 1.530113
+Train Epoch: 3 | Batch Status: 32640/50000 (65%) | Loss: 1.449069
+Train Epoch: 3 | Batch Status: 32960/50000 (66%) | Loss: 1.510405
+Train Epoch: 3 | Batch Status: 33280/50000 (67%) | Loss: 1.699143
+Train Epoch: 3 | Batch Status: 33600/50000 (67%) | Loss: 1.687066
+Train Epoch: 3 | Batch Status: 33920/50000 (68%) | Loss: 1.453252
+Train Epoch: 3 | Batch Status: 34240/50000 (68%) | Loss: 1.695242
+Train Epoch: 3 | Batch Status: 34560/50000 (69%) | Loss: 1.791440
+Train Epoch: 3 | Batch Status: 34880/50000 (70%) | Loss: 1.800278
+Train Epoch: 3 | Batch Status: 35200/50000 (70%) | Loss: 1.757160
+Train Epoch: 3 | Batch Status: 35520/50000 (71%) | Loss: 1.725856
+Train Epoch: 3 | Batch Status: 35840/50000 (72%) | Loss: 1.328536
+Train Epoch: 3 | Batch Status: 36160/50000 (72%) | Loss: 1.194153
+Train Epoch: 3 | Batch Status: 36480/50000 (73%) | Loss: 1.577779
+Train Epoch: 3 | Batch Status: 36800/50000 (74%) | Loss: 1.685948
+Train Epoch: 3 | Batch Status: 37120/50000 (74%) | Loss: 1.559110
+Train Epoch: 3 | Batch Status: 37440/50000 (75%) | Loss: 1.750132
+Train Epoch: 3 | Batch Status: 37760/50000 (75%) | Loss: 1.377669
+Train Epoch: 3 | Batch Status: 38080/50000 (76%) | Loss: 1.695293
+Train Epoch: 3 | Batch Status: 38400/50000 (77%) | Loss: 1.711680
+Train Epoch: 3 | Batch Status: 38720/50000 (77%) | Loss: 1.618364
+Train Epoch: 3 | Batch Status: 39040/50000 (78%) | Loss: 1.444979
+Train Epoch: 3 | Batch Status: 39360/50000 (79%) | Loss: 1.485211
+Train Epoch: 3 | Batch Status: 39680/50000 (79%) | Loss: 1.820825
+Train Epoch: 3 | Batch Status: 40000/50000 (80%) | Loss: 1.586643
+Train Epoch: 3 | Batch Status: 40320/50000 (81%) | Loss: 1.688694
+Train Epoch: 3 | Batch Status: 40640/50000 (81%) | Loss: 1.762745
+Train Epoch: 3 | Batch Status: 40960/50000 (82%) | Loss: 1.352486
+Train Epoch: 3 | Batch Status: 41280/50000 (83%) | Loss: 1.579034
+Train Epoch: 3 | Batch Status: 41600/50000 (83%) | Loss: 1.909263
+Train Epoch: 3 | Batch Status: 41920/50000 (84%) | Loss: 1.619344
+Train Epoch: 3 | Batch Status: 42240/50000 (84%) | Loss: 1.564844
+Train Epoch: 3 | Batch Status: 42560/50000 (85%) | Loss: 1.428095
+Train Epoch: 3 | Batch Status: 42880/50000 (86%) | Loss: 1.475699
+Train Epoch: 3 | Batch Status: 43200/50000 (86%) | Loss: 1.451703
+Train Epoch: 3 | Batch Status: 43520/50000 (87%) | Loss: 1.472104
+Train Epoch: 3 | Batch Status: 43840/50000 (88%) | Loss: 1.785532
+Train Epoch: 3 | Batch Status: 44160/50000 (88%) | Loss: 1.579573
+Train Epoch: 3 | Batch Status: 44480/50000 (89%) | Loss: 1.473310
+Train Epoch: 3 | Batch Status: 44800/50000 (90%) | Loss: 1.699265
+Train Epoch: 3 | Batch Status: 45120/50000 (90%) | Loss: 1.832979
+Train Epoch: 3 | Batch Status: 45440/50000 (91%) | Loss: 1.413739
+Train Epoch: 3 | Batch Status: 45760/50000 (91%) | Loss: 1.653408
+Train Epoch: 3 | Batch Status: 46080/50000 (92%) | Loss: 1.621541
+Train Epoch: 3 | Batch Status: 46400/50000 (93%) | Loss: 1.731457
+Train Epoch: 3 | Batch Status: 46720/50000 (93%) | Loss: 1.689139
+Train Epoch: 3 | Batch Status: 47040/50000 (94%) | Loss: 1.633876
+Train Epoch: 3 | Batch Status: 47360/50000 (95%) | Loss: 1.738850
+Train Epoch: 3 | Batch Status: 47680/50000 (95%) | Loss: 1.382249
+Train Epoch: 3 | Batch Status: 48000/50000 (96%) | Loss: 1.420123
+Train Epoch: 3 | Batch Status: 48320/50000 (97%) | Loss: 1.578849
+Train Epoch: 3 | Batch Status: 48640/50000 (97%) | Loss: 1.551945
+Train Epoch: 3 | Batch Status: 48960/50000 (98%) | Loss: 1.574566
+Train Epoch: 3 | Batch Status: 49280/50000 (99%) | Loss: 1.665412
+Train Epoch: 3 | Batch Status: 49600/50000 (99%) | Loss: 1.667261
+Train Epoch: 3 | Batch Status: 49920/50000 (100%) | Loss: 1.517199
+Training time: 0m 30s
+===========================
+Test set: Average loss: 0.0530, Accuracy: 3911/10000 (39%)
+Testing time: 0m 32s
+Train Epoch: 4 | Batch Status: 0/50000 (0%) | Loss: 2.167933
+Train Epoch: 4 | Batch Status: 320/50000 (1%) | Loss: 1.809895
+Train Epoch: 4 | Batch Status: 640/50000 (1%) | Loss: 1.500978
+Train Epoch: 4 | Batch Status: 960/50000 (2%) | Loss: 1.908630
+Train Epoch: 4 | Batch Status: 1280/50000 (3%) | Loss: 1.529662
+Train Epoch: 4 | Batch Status: 1600/50000 (3%) | Loss: 1.789219
+Train Epoch: 4 | Batch Status: 1920/50000 (4%) | Loss: 1.871889
+Train Epoch: 4 | Batch Status: 2240/50000 (4%) | Loss: 1.489725
+Train Epoch: 4 | Batch Status: 2560/50000 (5%) | Loss: 1.405031
+Train Epoch: 4 | Batch Status: 2880/50000 (6%) | Loss: 1.528076
+Train Epoch: 4 | Batch Status: 3200/50000 (6%) | Loss: 1.461893
+Train Epoch: 4 | Batch Status: 3520/50000 (7%) | Loss: 1.726688
+Train Epoch: 4 | Batch Status: 3840/50000 (8%) | Loss: 1.532376
+Train Epoch: 4 | Batch Status: 4160/50000 (8%) | Loss: 1.802850
+Train Epoch: 4 | Batch Status: 4480/50000 (9%) | Loss: 1.845377
+Train Epoch: 4 | Batch Status: 4800/50000 (10%) | Loss: 1.575042
+Train Epoch: 4 | Batch Status: 5120/50000 (10%) | Loss: 1.519771
+Train Epoch: 4 | Batch Status: 5440/50000 (11%) | Loss: 1.435731
+Train Epoch: 4 | Batch Status: 5760/50000 (12%) | Loss: 1.580539
+Train Epoch: 4 | Batch Status: 6080/50000 (12%) | Loss: 1.810154
+Train Epoch: 4 | Batch Status: 6400/50000 (13%) | Loss: 1.785638
+Train Epoch: 4 | Batch Status: 6720/50000 (13%) | Loss: 1.401333
+Train Epoch: 4 | Batch Status: 7040/50000 (14%) | Loss: 1.793595
+Train Epoch: 4 | Batch Status: 7360/50000 (15%) | Loss: 1.717696
+Train Epoch: 4 | Batch Status: 7680/50000 (15%) | Loss: 1.665709
+Train Epoch: 4 | Batch Status: 8000/50000 (16%) | Loss: 1.807629
+Train Epoch: 4 | Batch Status: 8320/50000 (17%) | Loss: 1.784392
+Train Epoch: 4 | Batch Status: 8640/50000 (17%) | Loss: 1.605540
+Train Epoch: 4 | Batch Status: 8960/50000 (18%) | Loss: 1.804697
+Train Epoch: 4 | Batch Status: 9280/50000 (19%) | Loss: 1.342277
+Train Epoch: 4 | Batch Status: 9600/50000 (19%) | Loss: 1.358061
+Train Epoch: 4 | Batch Status: 9920/50000 (20%) | Loss: 1.775161
+Train Epoch: 4 | Batch Status: 10240/50000 (20%) | Loss: 1.554972
+Train Epoch: 4 | Batch Status: 10560/50000 (21%) | Loss: 1.762038
+Train Epoch: 4 | Batch Status: 10880/50000 (22%) | Loss: 1.490750
+Train Epoch: 4 | Batch Status: 11200/50000 (22%) | Loss: 1.673862
+Train Epoch: 4 | Batch Status: 11520/50000 (23%) | Loss: 1.803323
+Train Epoch: 4 | Batch Status: 11840/50000 (24%) | Loss: 1.645766
+Train Epoch: 4 | Batch Status: 12160/50000 (24%) | Loss: 1.818698
+Train Epoch: 4 | Batch Status: 12480/50000 (25%) | Loss: 1.581832
+Train Epoch: 4 | Batch Status: 12800/50000 (26%) | Loss: 1.744951
+Train Epoch: 4 | Batch Status: 13120/50000 (26%) | Loss: 1.663330
+Train Epoch: 4 | Batch Status: 13440/50000 (27%) | Loss: 1.807429
+Train Epoch: 4 | Batch Status: 13760/50000 (28%) | Loss: 1.533138
+Train Epoch: 4 | Batch Status: 14080/50000 (28%) | Loss: 1.517835
+Train Epoch: 4 | Batch Status: 14400/50000 (29%) | Loss: 1.621902
+Train Epoch: 4 | Batch Status: 14720/50000 (29%) | Loss: 1.414716
+Train Epoch: 4 | Batch Status: 15040/50000 (30%) | Loss: 1.794020
+Train Epoch: 4 | Batch Status: 15360/50000 (31%) | Loss: 1.628232
+Train Epoch: 4 | Batch Status: 15680/50000 (31%) | Loss: 1.561178
+Train Epoch: 4 | Batch Status: 16000/50000 (32%) | Loss: 1.687240
+Train Epoch: 4 | Batch Status: 16320/50000 (33%) | Loss: 1.593481
+Train Epoch: 4 | Batch Status: 16640/50000 (33%) | Loss: 1.601434
+Train Epoch: 4 | Batch Status: 16960/50000 (34%) | Loss: 1.631174
+Train Epoch: 4 | Batch Status: 17280/50000 (35%) | Loss: 1.419107
+Train Epoch: 4 | Batch Status: 17600/50000 (35%) | Loss: 1.882371
+Train Epoch: 4 | Batch Status: 17920/50000 (36%) | Loss: 1.626281
+Train Epoch: 4 | Batch Status: 18240/50000 (36%) | Loss: 1.443809
+Train Epoch: 4 | Batch Status: 18560/50000 (37%) | Loss: 1.839455
+Train Epoch: 4 | Batch Status: 18880/50000 (38%) | Loss: 1.610315
+Train Epoch: 4 | Batch Status: 19200/50000 (38%) | Loss: 1.500454
+Train Epoch: 4 | Batch Status: 19520/50000 (39%) | Loss: 1.709112
+Train Epoch: 4 | Batch Status: 19840/50000 (40%) | Loss: 1.528637
+Train Epoch: 4 | Batch Status: 20160/50000 (40%) | Loss: 1.638282
+Train Epoch: 4 | Batch Status: 20480/50000 (41%) | Loss: 1.668665
+Train Epoch: 4 | Batch Status: 20800/50000 (42%) | Loss: 1.632282
+Train Epoch: 4 | Batch Status: 21120/50000 (42%) | Loss: 1.493951
+Train Epoch: 4 | Batch Status: 21440/50000 (43%) | Loss: 1.432595
+Train Epoch: 4 | Batch Status: 21760/50000 (44%) | Loss: 1.661494
+Train Epoch: 4 | Batch Status: 22080/50000 (44%) | Loss: 1.892502
+Train Epoch: 4 | Batch Status: 22400/50000 (45%) | Loss: 1.547312
+Train Epoch: 4 | Batch Status: 22720/50000 (45%) | Loss: 1.485127
+Train Epoch: 4 | Batch Status: 23040/50000 (46%) | Loss: 1.516239
+Train Epoch: 4 | Batch Status: 23360/50000 (47%) | Loss: 1.652452
+Train Epoch: 4 | Batch Status: 23680/50000 (47%) | Loss: 1.617473
+Train Epoch: 4 | Batch Status: 24000/50000 (48%) | Loss: 1.766623
+Train Epoch: 4 | Batch Status: 24320/50000 (49%) | Loss: 1.688941
+Train Epoch: 4 | Batch Status: 24640/50000 (49%) | Loss: 1.518214
+Train Epoch: 4 | Batch Status: 24960/50000 (50%) | Loss: 1.648513
+Train Epoch: 4 | Batch Status: 25280/50000 (51%) | Loss: 1.545813
+Train Epoch: 4 | Batch Status: 25600/50000 (51%) | Loss: 1.460623
+Train Epoch: 4 | Batch Status: 25920/50000 (52%) | Loss: 1.259488
+Train Epoch: 4 | Batch Status: 26240/50000 (52%) | Loss: 1.724145
+Train Epoch: 4 | Batch Status: 26560/50000 (53%) | Loss: 1.689140
+Train Epoch: 4 | Batch Status: 26880/50000 (54%) | Loss: 1.408728
+Train Epoch: 4 | Batch Status: 27200/50000 (54%) | Loss: 1.349908
+Train Epoch: 4 | Batch Status: 27520/50000 (55%) | Loss: 2.021414
+Train Epoch: 4 | Batch Status: 27840/50000 (56%) | Loss: 1.496383
+Train Epoch: 4 | Batch Status: 28160/50000 (56%) | Loss: 1.665305
+Train Epoch: 4 | Batch Status: 28480/50000 (57%) | Loss: 1.756302
+Train Epoch: 4 | Batch Status: 28800/50000 (58%) | Loss: 1.724015
+Train Epoch: 4 | Batch Status: 29120/50000 (58%) | Loss: 1.231995
+Train Epoch: 4 | Batch Status: 29440/50000 (59%) | Loss: 1.690912
+Train Epoch: 4 | Batch Status: 29760/50000 (60%) | Loss: 1.430645
+Train Epoch: 4 | Batch Status: 30080/50000 (60%) | Loss: 1.570020
+Train Epoch: 4 | Batch Status: 30400/50000 (61%) | Loss: 1.884095
+Train Epoch: 4 | Batch Status: 30720/50000 (61%) | Loss: 1.450855
+Train Epoch: 4 | Batch Status: 31040/50000 (62%) | Loss: 1.609016
+Train Epoch: 4 | Batch Status: 31360/50000 (63%) | Loss: 1.546643
+Train Epoch: 4 | Batch Status: 31680/50000 (63%) | Loss: 1.799661
+Train Epoch: 4 | Batch Status: 32000/50000 (64%) | Loss: 1.275889
+Train Epoch: 4 | Batch Status: 32320/50000 (65%) | Loss: 1.603041
+Train Epoch: 4 | Batch Status: 32640/50000 (65%) | Loss: 1.684293
+Train Epoch: 4 | Batch Status: 32960/50000 (66%) | Loss: 1.782157
+Train Epoch: 4 | Batch Status: 33280/50000 (67%) | Loss: 1.639930
+Train Epoch: 4 | Batch Status: 33600/50000 (67%) | Loss: 1.831724
+Train Epoch: 4 | Batch Status: 33920/50000 (68%) | Loss: 1.703375
+Train Epoch: 4 | Batch Status: 34240/50000 (68%) | Loss: 1.574276
+Train Epoch: 4 | Batch Status: 34560/50000 (69%) | Loss: 1.698806
+Train Epoch: 4 | Batch Status: 34880/50000 (70%) | Loss: 1.442137
+Train Epoch: 4 | Batch Status: 35200/50000 (70%) | Loss: 1.809915
+Train Epoch: 4 | Batch Status: 35520/50000 (71%) | Loss: 1.577946
+Train Epoch: 4 | Batch Status: 35840/50000 (72%) | Loss: 1.450880
+Train Epoch: 4 | Batch Status: 36160/50000 (72%) | Loss: 1.497074
+Train Epoch: 4 | Batch Status: 36480/50000 (73%) | Loss: 1.466898
+Train Epoch: 4 | Batch Status: 36800/50000 (74%) | Loss: 1.420279
+Train Epoch: 4 | Batch Status: 37120/50000 (74%) | Loss: 1.521746
+Train Epoch: 4 | Batch Status: 37440/50000 (75%) | Loss: 1.359563
+Train Epoch: 4 | Batch Status: 37760/50000 (75%) | Loss: 1.586217
+Train Epoch: 4 | Batch Status: 38080/50000 (76%) | Loss: 1.517432
+Train Epoch: 4 | Batch Status: 38400/50000 (77%) | Loss: 1.575659
+Train Epoch: 4 | Batch Status: 38720/50000 (77%) | Loss: 1.632998
+Train Epoch: 4 | Batch Status: 39040/50000 (78%) | Loss: 1.886643
+Train Epoch: 4 | Batch Status: 39360/50000 (79%) | Loss: 1.431125
+Train Epoch: 4 | Batch Status: 39680/50000 (79%) | Loss: 1.451899
+Train Epoch: 4 | Batch Status: 40000/50000 (80%) | Loss: 1.315150
+Train Epoch: 4 | Batch Status: 40320/50000 (81%) | Loss: 1.348904
+Train Epoch: 4 | Batch Status: 40640/50000 (81%) | Loss: 1.700680
+Train Epoch: 4 | Batch Status: 40960/50000 (82%) | Loss: 1.725186
+Train Epoch: 4 | Batch Status: 41280/50000 (83%) | Loss: 1.540132
+Train Epoch: 4 | Batch Status: 41600/50000 (83%) | Loss: 1.312860
+Train Epoch: 4 | Batch Status: 41920/50000 (84%) | Loss: 1.840723
+Train Epoch: 4 | Batch Status: 42240/50000 (84%) | Loss: 1.466484
+Train Epoch: 4 | Batch Status: 42560/50000 (85%) | Loss: 1.535246
+Train Epoch: 4 | Batch Status: 42880/50000 (86%) | Loss: 1.455912
+Train Epoch: 4 | Batch Status: 43200/50000 (86%) | Loss: 1.162489
+Train Epoch: 4 | Batch Status: 43520/50000 (87%) | Loss: 1.694778
+Train Epoch: 4 | Batch Status: 43840/50000 (88%) | Loss: 1.385907
+Train Epoch: 4 | Batch Status: 44160/50000 (88%) | Loss: 1.596206
+Train Epoch: 4 | Batch Status: 44480/50000 (89%) | Loss: 1.607986
+Train Epoch: 4 | Batch Status: 44800/50000 (90%) | Loss: 1.456314
+Train Epoch: 4 | Batch Status: 45120/50000 (90%) | Loss: 1.999592
+Train Epoch: 4 | Batch Status: 45440/50000 (91%) | Loss: 1.536020
+Train Epoch: 4 | Batch Status: 45760/50000 (91%) | Loss: 1.381547
+Train Epoch: 4 | Batch Status: 46080/50000 (92%) | Loss: 1.996747
+Train Epoch: 4 | Batch Status: 46400/50000 (93%) | Loss: 1.486231
+Train Epoch: 4 | Batch Status: 46720/50000 (93%) | Loss: 1.471426
+Train Epoch: 4 | Batch Status: 47040/50000 (94%) | Loss: 1.673477
+Train Epoch: 4 | Batch Status: 47360/50000 (95%) | Loss: 1.740499
+Train Epoch: 4 | Batch Status: 47680/50000 (95%) | Loss: 1.536972
+Train Epoch: 4 | Batch Status: 48000/50000 (96%) | Loss: 1.633367
+Train Epoch: 4 | Batch Status: 48320/50000 (97%) | Loss: 1.383435
+Train Epoch: 4 | Batch Status: 48640/50000 (97%) | Loss: 1.429551
+Train Epoch: 4 | Batch Status: 48960/50000 (98%) | Loss: 1.914154
+Train Epoch: 4 | Batch Status: 49280/50000 (99%) | Loss: 1.645806
+Train Epoch: 4 | Batch Status: 49600/50000 (99%) | Loss: 1.910701
+Train Epoch: 4 | Batch Status: 49920/50000 (100%) | Loss: 1.966462
+Training time: 0m 31s
+===========================
+Test set: Average loss: 0.0514, Accuracy: 3995/10000 (40%)
+Testing time: 0m 33s
+Train Epoch: 5 | Batch Status: 0/50000 (0%) | Loss: 1.336728
+Train Epoch: 5 | Batch Status: 320/50000 (1%) | Loss: 1.559572
+Train Epoch: 5 | Batch Status: 640/50000 (1%) | Loss: 1.707728
+Train Epoch: 5 | Batch Status: 960/50000 (2%) | Loss: 1.475872
+Train Epoch: 5 | Batch Status: 1280/50000 (3%) | Loss: 1.644376
+Train Epoch: 5 | Batch Status: 1600/50000 (3%) | Loss: 1.437244
+Train Epoch: 5 | Batch Status: 1920/50000 (4%) | Loss: 1.312402
+Train Epoch: 5 | Batch Status: 2240/50000 (4%) | Loss: 1.533693
+Train Epoch: 5 | Batch Status: 2560/50000 (5%) | Loss: 1.334547
+Train Epoch: 5 | Batch Status: 2880/50000 (6%) | Loss: 1.394342
+Train Epoch: 5 | Batch Status: 3200/50000 (6%) | Loss: 1.610224
+Train Epoch: 5 | Batch Status: 3520/50000 (7%) | Loss: 1.446737
+Train Epoch: 5 | Batch Status: 3840/50000 (8%) | Loss: 1.736597
+Train Epoch: 5 | Batch Status: 4160/50000 (8%) | Loss: 1.554257
+Train Epoch: 5 | Batch Status: 4480/50000 (9%) | Loss: 1.434129
+Train Epoch: 5 | Batch Status: 4800/50000 (10%) | Loss: 1.786187
+Train Epoch: 5 | Batch Status: 5120/50000 (10%) | Loss: 1.393476
+Train Epoch: 5 | Batch Status: 5440/50000 (11%) | Loss: 1.687917
+Train Epoch: 5 | Batch Status: 5760/50000 (12%) | Loss: 1.484319
+Train Epoch: 5 | Batch Status: 6080/50000 (12%) | Loss: 2.008650
+Train Epoch: 5 | Batch Status: 6400/50000 (13%) | Loss: 1.854537
+Train Epoch: 5 | Batch Status: 6720/50000 (13%) | Loss: 1.769282
+Train Epoch: 5 | Batch Status: 7040/50000 (14%) | Loss: 1.466624
+Train Epoch: 5 | Batch Status: 7360/50000 (15%) | Loss: 1.546167
+Train Epoch: 5 | Batch Status: 7680/50000 (15%) | Loss: 1.508350
+Train Epoch: 5 | Batch Status: 8000/50000 (16%) | Loss: 1.594736
+Train Epoch: 5 | Batch Status: 8320/50000 (17%) | Loss: 1.808217
+Train Epoch: 5 | Batch Status: 8640/50000 (17%) | Loss: 1.462518
+Train Epoch: 5 | Batch Status: 8960/50000 (18%) | Loss: 1.591055
+Train Epoch: 5 | Batch Status: 9280/50000 (19%) | Loss: 1.254217
+Train Epoch: 5 | Batch Status: 9600/50000 (19%) | Loss: 1.322776
+Train Epoch: 5 | Batch Status: 9920/50000 (20%) | Loss: 1.570209
+Train Epoch: 5 | Batch Status: 10240/50000 (20%) | Loss: 1.254794
+Train Epoch: 5 | Batch Status: 10560/50000 (21%) | Loss: 1.496307
+Train Epoch: 5 | Batch Status: 10880/50000 (22%) | Loss: 1.468154
+Train Epoch: 5 | Batch Status: 11200/50000 (22%) | Loss: 1.449298
+Train Epoch: 5 | Batch Status: 11520/50000 (23%) | Loss: 1.516449
+Train Epoch: 5 | Batch Status: 11840/50000 (24%) | Loss: 1.396182
+Train Epoch: 5 | Batch Status: 12160/50000 (24%) | Loss: 1.452288
+Train Epoch: 5 | Batch Status: 12480/50000 (25%) | Loss: 1.547823
+Train Epoch: 5 | Batch Status: 12800/50000 (26%) | Loss: 1.274586
+Train Epoch: 5 | Batch Status: 13120/50000 (26%) | Loss: 1.509445
+Train Epoch: 5 | Batch Status: 13440/50000 (27%) | Loss: 1.522335
+Train Epoch: 5 | Batch Status: 13760/50000 (28%) | Loss: 1.509582
+Train Epoch: 5 | Batch Status: 14080/50000 (28%) | Loss: 1.678304
+Train Epoch: 5 | Batch Status: 14400/50000 (29%) | Loss: 1.539336
+Train Epoch: 5 | Batch Status: 14720/50000 (29%) | Loss: 1.604535
+Train Epoch: 5 | Batch Status: 15040/50000 (30%) | Loss: 1.622029
+Train Epoch: 5 | Batch Status: 15360/50000 (31%) | Loss: 1.740572
+Train Epoch: 5 | Batch Status: 15680/50000 (31%) | Loss: 1.369053
+Train Epoch: 5 | Batch Status: 16000/50000 (32%) | Loss: 1.755271
+Train Epoch: 5 | Batch Status: 16320/50000 (33%) | Loss: 1.106671
+Train Epoch: 5 | Batch Status: 16640/50000 (33%) | Loss: 1.316261
+Train Epoch: 5 | Batch Status: 16960/50000 (34%) | Loss: 1.602617
+Train Epoch: 5 | Batch Status: 17280/50000 (35%) | Loss: 1.616408
+Train Epoch: 5 | Batch Status: 17600/50000 (35%) | Loss: 1.504138
+Train Epoch: 5 | Batch Status: 17920/50000 (36%) | Loss: 1.700958
+Train Epoch: 5 | Batch Status: 18240/50000 (36%) | Loss: 1.658108
+Train Epoch: 5 | Batch Status: 18560/50000 (37%) | Loss: 1.535799
+Train Epoch: 5 | Batch Status: 18880/50000 (38%) | Loss: 1.130152
+Train Epoch: 5 | Batch Status: 19200/50000 (38%) | Loss: 1.291622
+Train Epoch: 5 | Batch Status: 19520/50000 (39%) | Loss: 1.630508
+Train Epoch: 5 | Batch Status: 19840/50000 (40%) | Loss: 2.249904
+Train Epoch: 5 | Batch Status: 20160/50000 (40%) | Loss: 1.595858
+Train Epoch: 5 | Batch Status: 20480/50000 (41%) | Loss: 1.001333
+Train Epoch: 5 | Batch Status: 20800/50000 (42%) | Loss: 1.728015
+Train Epoch: 5 | Batch Status: 21120/50000 (42%) | Loss: 1.361909
+Train Epoch: 5 | Batch Status: 21440/50000 (43%) | Loss: 1.051379
+Train Epoch: 5 | Batch Status: 21760/50000 (44%) | Loss: 1.600570
+Train Epoch: 5 | Batch Status: 22080/50000 (44%) | Loss: 1.952986
+Train Epoch: 5 | Batch Status: 22400/50000 (45%) | Loss: 1.711305
+Train Epoch: 5 | Batch Status: 22720/50000 (45%) | Loss: 1.658152
+Train Epoch: 5 | Batch Status: 23040/50000 (46%) | Loss: 1.248307
+Train Epoch: 5 | Batch Status: 23360/50000 (47%) | Loss: 1.382700
+Train Epoch: 5 | Batch Status: 23680/50000 (47%) | Loss: 1.484520
+Train Epoch: 5 | Batch Status: 24000/50000 (48%) | Loss: 1.515285
+Train Epoch: 5 | Batch Status: 24320/50000 (49%) | Loss: 1.368488
+Train Epoch: 5 | Batch Status: 24640/50000 (49%) | Loss: 1.596173
+Train Epoch: 5 | Batch Status: 24960/50000 (50%) | Loss: 1.337783
+Train Epoch: 5 | Batch Status: 25280/50000 (51%) | Loss: 1.461593
+Train Epoch: 5 | Batch Status: 25600/50000 (51%) | Loss: 1.467172
+Train Epoch: 5 | Batch Status: 25920/50000 (52%) | Loss: 1.229840
+Train Epoch: 5 | Batch Status: 26240/50000 (52%) | Loss: 1.543469
+Train Epoch: 5 | Batch Status: 26560/50000 (53%) | Loss: 1.777049
+Train Epoch: 5 | Batch Status: 26880/50000 (54%) | Loss: 1.435582
+Train Epoch: 5 | Batch Status: 27200/50000 (54%) | Loss: 1.397602
+Train Epoch: 5 | Batch Status: 27520/50000 (55%) | Loss: 1.103595
+Train Epoch: 5 | Batch Status: 27840/50000 (56%) | Loss: 1.490377
+Train Epoch: 5 | Batch Status: 28160/50000 (56%) | Loss: 1.906180
+Train Epoch: 5 | Batch Status: 28480/50000 (57%) | Loss: 1.550469
+Train Epoch: 5 | Batch Status: 28800/50000 (58%) | Loss: 1.779248
+Train Epoch: 5 | Batch Status: 29120/50000 (58%) | Loss: 1.543844
+Train Epoch: 5 | Batch Status: 29440/50000 (59%) | Loss: 1.353083
+Train Epoch: 5 | Batch Status: 29760/50000 (60%) | Loss: 1.629350
+Train Epoch: 5 | Batch Status: 30080/50000 (60%) | Loss: 1.437171
+Train Epoch: 5 | Batch Status: 30400/50000 (61%) | Loss: 1.673986
+Train Epoch: 5 | Batch Status: 30720/50000 (61%) | Loss: 1.694210
+Train Epoch: 5 | Batch Status: 31040/50000 (62%) | Loss: 1.916796
+Train Epoch: 5 | Batch Status: 31360/50000 (63%) | Loss: 1.548202
+Train Epoch: 5 | Batch Status: 31680/50000 (63%) | Loss: 1.444780
+Train Epoch: 5 | Batch Status: 32000/50000 (64%) | Loss: 1.519705
+Train Epoch: 5 | Batch Status: 32320/50000 (65%) | Loss: 1.262816
+Train Epoch: 5 | Batch Status: 32640/50000 (65%) | Loss: 1.974030
+Train Epoch: 5 | Batch Status: 32960/50000 (66%) | Loss: 1.437030
+Train Epoch: 5 | Batch Status: 33280/50000 (67%) | Loss: 1.346318
+Train Epoch: 5 | Batch Status: 33600/50000 (67%) | Loss: 1.117749
+Train Epoch: 5 | Batch Status: 33920/50000 (68%) | Loss: 1.313975
+Train Epoch: 5 | Batch Status: 34240/50000 (68%) | Loss: 1.405175
+Train Epoch: 5 | Batch Status: 34560/50000 (69%) | Loss: 1.410370
+Train Epoch: 5 | Batch Status: 34880/50000 (70%) | Loss: 1.575815
+Train Epoch: 5 | Batch Status: 35200/50000 (70%) | Loss: 1.576012
+Train Epoch: 5 | Batch Status: 35520/50000 (71%) | Loss: 1.367407
+Train Epoch: 5 | Batch Status: 35840/50000 (72%) | Loss: 1.733020
+Train Epoch: 5 | Batch Status: 36160/50000 (72%) | Loss: 1.506353
+Train Epoch: 5 | Batch Status: 36480/50000 (73%) | Loss: 1.529205
+Train Epoch: 5 | Batch Status: 36800/50000 (74%) | Loss: 1.830697
+Train Epoch: 5 | Batch Status: 37120/50000 (74%) | Loss: 1.513627
+Train Epoch: 5 | Batch Status: 37440/50000 (75%) | Loss: 1.159260
+Train Epoch: 5 | Batch Status: 37760/50000 (75%) | Loss: 1.642224
+Train Epoch: 5 | Batch Status: 38080/50000 (76%) | Loss: 1.551244
+Train Epoch: 5 | Batch Status: 38400/50000 (77%) | Loss: 1.170067
+Train Epoch: 5 | Batch Status: 38720/50000 (77%) | Loss: 1.446216
+Train Epoch: 5 | Batch Status: 39040/50000 (78%) | Loss: 1.376384
+Train Epoch: 5 | Batch Status: 39360/50000 (79%) | Loss: 1.276552
+Train Epoch: 5 | Batch Status: 39680/50000 (79%) | Loss: 1.968187
+Train Epoch: 5 | Batch Status: 40000/50000 (80%) | Loss: 1.841228
+Train Epoch: 5 | Batch Status: 40320/50000 (81%) | Loss: 1.710446
+Train Epoch: 5 | Batch Status: 40640/50000 (81%) | Loss: 1.500585
+Train Epoch: 5 | Batch Status: 40960/50000 (82%) | Loss: 1.603590
+Train Epoch: 5 | Batch Status: 41280/50000 (83%) | Loss: 1.471165
+Train Epoch: 5 | Batch Status: 41600/50000 (83%) | Loss: 1.814573
+Train Epoch: 5 | Batch Status: 41920/50000 (84%) | Loss: 1.489492
+Train Epoch: 5 | Batch Status: 42240/50000 (84%) | Loss: 1.256031
+Train Epoch: 5 | Batch Status: 42560/50000 (85%) | Loss: 1.520096
+Train Epoch: 5 | Batch Status: 42880/50000 (86%) | Loss: 1.471737
+Train Epoch: 5 | Batch Status: 43200/50000 (86%) | Loss: 1.575647
+Train Epoch: 5 | Batch Status: 43520/50000 (87%) | Loss: 1.416230
+Train Epoch: 5 | Batch Status: 43840/50000 (88%) | Loss: 1.316901
+Train Epoch: 5 | Batch Status: 44160/50000 (88%) | Loss: 1.474056
+Train Epoch: 5 | Batch Status: 44480/50000 (89%) | Loss: 1.379251
+Train Epoch: 5 | Batch Status: 44800/50000 (90%) | Loss: 1.214990
+Train Epoch: 5 | Batch Status: 45120/50000 (90%) | Loss: 1.396511
+Train Epoch: 5 | Batch Status: 45440/50000 (91%) | Loss: 1.388419
+Train Epoch: 5 | Batch Status: 45760/50000 (91%) | Loss: 1.622434
+Train Epoch: 5 | Batch Status: 46080/50000 (92%) | Loss: 1.273615
+Train Epoch: 5 | Batch Status: 46400/50000 (93%) | Loss: 1.554681
+Train Epoch: 5 | Batch Status: 46720/50000 (93%) | Loss: 1.634302
+Train Epoch: 5 | Batch Status: 47040/50000 (94%) | Loss: 1.855248
+Train Epoch: 5 | Batch Status: 47360/50000 (95%) | Loss: 1.339524
+Train Epoch: 5 | Batch Status: 47680/50000 (95%) | Loss: 1.525131
+Train Epoch: 5 | Batch Status: 48000/50000 (96%) | Loss: 1.755975
+Train Epoch: 5 | Batch Status: 48320/50000 (97%) | Loss: 1.781278
+Train Epoch: 5 | Batch Status: 48640/50000 (97%) | Loss: 1.560660
+Train Epoch: 5 | Batch Status: 48960/50000 (98%) | Loss: 1.383633
+Train Epoch: 5 | Batch Status: 49280/50000 (99%) | Loss: 1.846840
+Train Epoch: 5 | Batch Status: 49600/50000 (99%) | Loss: 1.655403
+Train Epoch: 5 | Batch Status: 49920/50000 (100%) | Loss: 1.217582
+Training time: 0m 31s
+===========================
+Test set: Average loss: 0.0466, Accuracy: 4734/10000 (47%)
+Testing time: 0m 34s
+Train Epoch: 6 | Batch Status: 0/50000 (0%) | Loss: 1.487778
+Train Epoch: 6 | Batch Status: 320/50000 (1%) | Loss: 1.390195
+Train Epoch: 6 | Batch Status: 640/50000 (1%) | Loss: 1.623522
+Train Epoch: 6 | Batch Status: 960/50000 (2%) | Loss: 1.418684
+Train Epoch: 6 | Batch Status: 1280/50000 (3%) | Loss: 1.337795
+Train Epoch: 6 | Batch Status: 1600/50000 (3%) | Loss: 1.386283
+Train Epoch: 6 | Batch Status: 1920/50000 (4%) | Loss: 1.653278
+Train Epoch: 6 | Batch Status: 2240/50000 (4%) | Loss: 1.545988
+Train Epoch: 6 | Batch Status: 2560/50000 (5%) | Loss: 1.385422
+Train Epoch: 6 | Batch Status: 2880/50000 (6%) | Loss: 1.587007
+Train Epoch: 6 | Batch Status: 3200/50000 (6%) | Loss: 1.574170
+Train Epoch: 6 | Batch Status: 3520/50000 (7%) | Loss: 1.676724
+Train Epoch: 6 | Batch Status: 3840/50000 (8%) | Loss: 1.755201
+Train Epoch: 6 | Batch Status: 4160/50000 (8%) | Loss: 1.646439
+Train Epoch: 6 | Batch Status: 4480/50000 (9%) | Loss: 1.403921
+Train Epoch: 6 | Batch Status: 4800/50000 (10%) | Loss: 1.320418
+Train Epoch: 6 | Batch Status: 5120/50000 (10%) | Loss: 1.544195
+Train Epoch: 6 | Batch Status: 5440/50000 (11%) | Loss: 1.423028
+Train Epoch: 6 | Batch Status: 5760/50000 (12%) | Loss: 1.892790
+Train Epoch: 6 | Batch Status: 6080/50000 (12%) | Loss: 1.619035
+Train Epoch: 6 | Batch Status: 6400/50000 (13%) | Loss: 1.258216
+Train Epoch: 6 | Batch Status: 6720/50000 (13%) | Loss: 1.437819
+Train Epoch: 6 | Batch Status: 7040/50000 (14%) | Loss: 1.534705
+Train Epoch: 6 | Batch Status: 7360/50000 (15%) | Loss: 1.498783
+Train Epoch: 6 | Batch Status: 7680/50000 (15%) | Loss: 1.879054
+Train Epoch: 6 | Batch Status: 8000/50000 (16%) | Loss: 1.208750
+Train Epoch: 6 | Batch Status: 8320/50000 (17%) | Loss: 1.699167
+Train Epoch: 6 | Batch Status: 8640/50000 (17%) | Loss: 1.666870
+Train Epoch: 6 | Batch Status: 8960/50000 (18%) | Loss: 1.639123
+Train Epoch: 6 | Batch Status: 9280/50000 (19%) | Loss: 1.384280
+Train Epoch: 6 | Batch Status: 9600/50000 (19%) | Loss: 1.595638
+Train Epoch: 6 | Batch Status: 9920/50000 (20%) | Loss: 1.346321
+Train Epoch: 6 | Batch Status: 10240/50000 (20%) | Loss: 1.611507
+Train Epoch: 6 | Batch Status: 10560/50000 (21%) | Loss: 1.453961
+Train Epoch: 6 | Batch Status: 10880/50000 (22%) | Loss: 1.593783
+Train Epoch: 6 | Batch Status: 11200/50000 (22%) | Loss: 1.501402
+Train Epoch: 6 | Batch Status: 11520/50000 (23%) | Loss: 1.502575
+Train Epoch: 6 | Batch Status: 11840/50000 (24%) | Loss: 1.671905
+Train Epoch: 6 | Batch Status: 12160/50000 (24%) | Loss: 1.509177
+Train Epoch: 6 | Batch Status: 12480/50000 (25%) | Loss: 1.380348
+Train Epoch: 6 | Batch Status: 12800/50000 (26%) | Loss: 1.801710
+Train Epoch: 6 | Batch Status: 13120/50000 (26%) | Loss: 1.597625
+Train Epoch: 6 | Batch Status: 13440/50000 (27%) | Loss: 2.106868
+Train Epoch: 6 | Batch Status: 13760/50000 (28%) | Loss: 1.508572
+Train Epoch: 6 | Batch Status: 14080/50000 (28%) | Loss: 1.630753
+Train Epoch: 6 | Batch Status: 14400/50000 (29%) | Loss: 1.233682
+Train Epoch: 6 | Batch Status: 14720/50000 (29%) | Loss: 1.502368
+Train Epoch: 6 | Batch Status: 15040/50000 (30%) | Loss: 1.435876
+Train Epoch: 6 | Batch Status: 15360/50000 (31%) | Loss: 1.642600
+Train Epoch: 6 | Batch Status: 15680/50000 (31%) | Loss: 1.352681
+Train Epoch: 6 | Batch Status: 16000/50000 (32%) | Loss: 1.600409
+Train Epoch: 6 | Batch Status: 16320/50000 (33%) | Loss: 1.652632
+Train Epoch: 6 | Batch Status: 16640/50000 (33%) | Loss: 1.485560
+Train Epoch: 6 | Batch Status: 16960/50000 (34%) | Loss: 1.334747
+Train Epoch: 6 | Batch Status: 17280/50000 (35%) | Loss: 1.365521
+Train Epoch: 6 | Batch Status: 17600/50000 (35%) | Loss: 1.262007
+Train Epoch: 6 | Batch Status: 17920/50000 (36%) | Loss: 1.937134
+Train Epoch: 6 | Batch Status: 18240/50000 (36%) | Loss: 1.494886
+Train Epoch: 6 | Batch Status: 18560/50000 (37%) | Loss: 1.994552
+Train Epoch: 6 | Batch Status: 18880/50000 (38%) | Loss: 1.403482
+Train Epoch: 6 | Batch Status: 19200/50000 (38%) | Loss: 1.749368
+Train Epoch: 6 | Batch Status: 19520/50000 (39%) | Loss: 1.378772
+Train Epoch: 6 | Batch Status: 19840/50000 (40%) | Loss: 1.591666
+Train Epoch: 6 | Batch Status: 20160/50000 (40%) | Loss: 1.474078
+Train Epoch: 6 | Batch Status: 20480/50000 (41%) | Loss: 1.611561
+Train Epoch: 6 | Batch Status: 20800/50000 (42%) | Loss: 1.210442
+Train Epoch: 6 | Batch Status: 21120/50000 (42%) | Loss: 1.270164
+Train Epoch: 6 | Batch Status: 21440/50000 (43%) | Loss: 1.609462
+Train Epoch: 6 | Batch Status: 21760/50000 (44%) | Loss: 1.686589
+Train Epoch: 6 | Batch Status: 22080/50000 (44%) | Loss: 1.167882
+Train Epoch: 6 | Batch Status: 22400/50000 (45%) | Loss: 1.365846
+Train Epoch: 6 | Batch Status: 22720/50000 (45%) | Loss: 1.412111
+Train Epoch: 6 | Batch Status: 23040/50000 (46%) | Loss: 1.529164
+Train Epoch: 6 | Batch Status: 23360/50000 (47%) | Loss: 1.459494
+Train Epoch: 6 | Batch Status: 23680/50000 (47%) | Loss: 1.498030
+Train Epoch: 6 | Batch Status: 24000/50000 (48%) | Loss: 1.360317
+Train Epoch: 6 | Batch Status: 24320/50000 (49%) | Loss: 1.374448
+Train Epoch: 6 | Batch Status: 24640/50000 (49%) | Loss: 1.449113
+Train Epoch: 6 | Batch Status: 24960/50000 (50%) | Loss: 1.511703
+Train Epoch: 6 | Batch Status: 25280/50000 (51%) | Loss: 1.225461
+Train Epoch: 6 | Batch Status: 25600/50000 (51%) | Loss: 1.602610
+Train Epoch: 6 | Batch Status: 25920/50000 (52%) | Loss: 1.315297
+Train Epoch: 6 | Batch Status: 26240/50000 (52%) | Loss: 1.560982
+Train Epoch: 6 | Batch Status: 26560/50000 (53%) | Loss: 1.632649
+Train Epoch: 6 | Batch Status: 26880/50000 (54%) | Loss: 1.475555
+Train Epoch: 6 | Batch Status: 27200/50000 (54%) | Loss: 1.913656
+Train Epoch: 6 | Batch Status: 27520/50000 (55%) | Loss: 1.643523
+Train Epoch: 6 | Batch Status: 27840/50000 (56%) | Loss: 1.724412
+Train Epoch: 6 | Batch Status: 28160/50000 (56%) | Loss: 1.143025
+Train Epoch: 6 | Batch Status: 28480/50000 (57%) | Loss: 1.482640
+Train Epoch: 6 | Batch Status: 28800/50000 (58%) | Loss: 1.426118
+Train Epoch: 6 | Batch Status: 29120/50000 (58%) | Loss: 1.327271
+Train Epoch: 6 | Batch Status: 29440/50000 (59%) | Loss: 1.091349
+Train Epoch: 6 | Batch Status: 29760/50000 (60%) | Loss: 1.584049
+Train Epoch: 6 | Batch Status: 30080/50000 (60%) | Loss: 1.180920
+Train Epoch: 6 | Batch Status: 30400/50000 (61%) | Loss: 1.445074
+Train Epoch: 6 | Batch Status: 30720/50000 (61%) | Loss: 1.762720
+Train Epoch: 6 | Batch Status: 31040/50000 (62%) | Loss: 1.492852
+Train Epoch: 6 | Batch Status: 31360/50000 (63%) | Loss: 1.584453
+Train Epoch: 6 | Batch Status: 31680/50000 (63%) | Loss: 1.390411
+Train Epoch: 6 | Batch Status: 32000/50000 (64%) | Loss: 1.688806
+Train Epoch: 6 | Batch Status: 32320/50000 (65%) | Loss: 1.145314
+Train Epoch: 6 | Batch Status: 32640/50000 (65%) | Loss: 1.650744
+Train Epoch: 6 | Batch Status: 32960/50000 (66%) | Loss: 1.612164
+Train Epoch: 6 | Batch Status: 33280/50000 (67%) | Loss: 1.382916
+Train Epoch: 6 | Batch Status: 33600/50000 (67%) | Loss: 1.274905
+Train Epoch: 6 | Batch Status: 33920/50000 (68%) | Loss: 1.480543
+Train Epoch: 6 | Batch Status: 34240/50000 (68%) | Loss: 1.625582
+Train Epoch: 6 | Batch Status: 34560/50000 (69%) | Loss: 1.357934
+Train Epoch: 6 | Batch Status: 34880/50000 (70%) | Loss: 1.372230
+Train Epoch: 6 | Batch Status: 35200/50000 (70%) | Loss: 1.583539
+Train Epoch: 6 | Batch Status: 35520/50000 (71%) | Loss: 1.181097
+Train Epoch: 6 | Batch Status: 35840/50000 (72%) | Loss: 1.650636
+Train Epoch: 6 | Batch Status: 36160/50000 (72%) | Loss: 1.558965
+Train Epoch: 6 | Batch Status: 36480/50000 (73%) | Loss: 1.711012
+Train Epoch: 6 | Batch Status: 36800/50000 (74%) | Loss: 1.340007
+Train Epoch: 6 | Batch Status: 37120/50000 (74%) | Loss: 1.390679
+Train Epoch: 6 | Batch Status: 37440/50000 (75%) | Loss: 1.421878
+Train Epoch: 6 | Batch Status: 37760/50000 (75%) | Loss: 1.405775
+Train Epoch: 6 | Batch Status: 38080/50000 (76%) | Loss: 1.366297
+Train Epoch: 6 | Batch Status: 38400/50000 (77%) | Loss: 1.493113
+Train Epoch: 6 | Batch Status: 38720/50000 (77%) | Loss: 1.611048
+Train Epoch: 6 | Batch Status: 39040/50000 (78%) | Loss: 1.362488
+Train Epoch: 6 | Batch Status: 39360/50000 (79%) | Loss: 1.335525
+Train Epoch: 6 | Batch Status: 39680/50000 (79%) | Loss: 1.864794
+Train Epoch: 6 | Batch Status: 40000/50000 (80%) | Loss: 1.421516
+Train Epoch: 6 | Batch Status: 40320/50000 (81%) | Loss: 1.393102
+Train Epoch: 6 | Batch Status: 40640/50000 (81%) | Loss: 1.457023
+Train Epoch: 6 | Batch Status: 40960/50000 (82%) | Loss: 1.594614
+Train Epoch: 6 | Batch Status: 41280/50000 (83%) | Loss: 1.632326
+Train Epoch: 6 | Batch Status: 41600/50000 (83%) | Loss: 1.491268
+Train Epoch: 6 | Batch Status: 41920/50000 (84%) | Loss: 1.140892
+Train Epoch: 6 | Batch Status: 42240/50000 (84%) | Loss: 1.446573
+Train Epoch: 6 | Batch Status: 42560/50000 (85%) | Loss: 1.456797
+Train Epoch: 6 | Batch Status: 42880/50000 (86%) | Loss: 1.351083
+Train Epoch: 6 | Batch Status: 43200/50000 (86%) | Loss: 1.544828
+Train Epoch: 6 | Batch Status: 43520/50000 (87%) | Loss: 1.605044
+Train Epoch: 6 | Batch Status: 43840/50000 (88%) | Loss: 1.238737
+Train Epoch: 6 | Batch Status: 44160/50000 (88%) | Loss: 1.312785
+Train Epoch: 6 | Batch Status: 44480/50000 (89%) | Loss: 1.243220
+Train Epoch: 6 | Batch Status: 44800/50000 (90%) | Loss: 1.491023
+Train Epoch: 6 | Batch Status: 45120/50000 (90%) | Loss: 1.581841
+Train Epoch: 6 | Batch Status: 45440/50000 (91%) | Loss: 1.337410
+Train Epoch: 6 | Batch Status: 45760/50000 (91%) | Loss: 1.445202
+Train Epoch: 6 | Batch Status: 46080/50000 (92%) | Loss: 1.096501
+Train Epoch: 6 | Batch Status: 46400/50000 (93%) | Loss: 1.581614
+Train Epoch: 6 | Batch Status: 46720/50000 (93%) | Loss: 1.532594
+Train Epoch: 6 | Batch Status: 47040/50000 (94%) | Loss: 1.598898
+Train Epoch: 6 | Batch Status: 47360/50000 (95%) | Loss: 1.148815
+Train Epoch: 6 | Batch Status: 47680/50000 (95%) | Loss: 1.675829
+Train Epoch: 6 | Batch Status: 48000/50000 (96%) | Loss: 1.197860
+Train Epoch: 6 | Batch Status: 48320/50000 (97%) | Loss: 1.782479
+Train Epoch: 6 | Batch Status: 48640/50000 (97%) | Loss: 1.339652
+Train Epoch: 6 | Batch Status: 48960/50000 (98%) | Loss: 1.350094
+Train Epoch: 6 | Batch Status: 49280/50000 (99%) | Loss: 1.431030
+Train Epoch: 6 | Batch Status: 49600/50000 (99%) | Loss: 1.397004
+Train Epoch: 6 | Batch Status: 49920/50000 (100%) | Loss: 1.436325
+Training time: 0m 31s
+===========================
+Test set: Average loss: 0.0468, Accuracy: 4731/10000 (47%)
+Testing time: 0m 33s
+Train Epoch: 7 | Batch Status: 0/50000 (0%) | Loss: 1.187399
+Train Epoch: 7 | Batch Status: 320/50000 (1%) | Loss: 1.538063
+Train Epoch: 7 | Batch Status: 640/50000 (1%) | Loss: 1.734004
+Train Epoch: 7 | Batch Status: 960/50000 (2%) | Loss: 1.600332
+Train Epoch: 7 | Batch Status: 1280/50000 (3%) | Loss: 1.369772
+Train Epoch: 7 | Batch Status: 1600/50000 (3%) | Loss: 1.098189
+Train Epoch: 7 | Batch Status: 1920/50000 (4%) | Loss: 1.262463
+Train Epoch: 7 | Batch Status: 2240/50000 (4%) | Loss: 1.817660
+Train Epoch: 7 | Batch Status: 2560/50000 (5%) | Loss: 1.561313
+Train Epoch: 7 | Batch Status: 2880/50000 (6%) | Loss: 1.619576
+Train Epoch: 7 | Batch Status: 3200/50000 (6%) | Loss: 1.491911
+Train Epoch: 7 | Batch Status: 3520/50000 (7%) | Loss: 1.457659
+Train Epoch: 7 | Batch Status: 3840/50000 (8%) | Loss: 1.506436
+Train Epoch: 7 | Batch Status: 4160/50000 (8%) | Loss: 1.377668
+Train Epoch: 7 | Batch Status: 4480/50000 (9%) | Loss: 1.775321
+Train Epoch: 7 | Batch Status: 4800/50000 (10%) | Loss: 1.373628
+Train Epoch: 7 | Batch Status: 5120/50000 (10%) | Loss: 1.308009
+Train Epoch: 7 | Batch Status: 5440/50000 (11%) | Loss: 1.636724
+Train Epoch: 7 | Batch Status: 5760/50000 (12%) | Loss: 1.228199
+Train Epoch: 7 | Batch Status: 6080/50000 (12%) | Loss: 1.366427
+Train Epoch: 7 | Batch Status: 6400/50000 (13%) | Loss: 1.372220
+Train Epoch: 7 | Batch Status: 6720/50000 (13%) | Loss: 1.144106
+Train Epoch: 7 | Batch Status: 7040/50000 (14%) | Loss: 1.564642
+Train Epoch: 7 | Batch Status: 7360/50000 (15%) | Loss: 1.491354
+Train Epoch: 7 | Batch Status: 7680/50000 (15%) | Loss: 1.733122
+Train Epoch: 7 | Batch Status: 8000/50000 (16%) | Loss: 1.151263
+Train Epoch: 7 | Batch Status: 8320/50000 (17%) | Loss: 1.291935
+Train Epoch: 7 | Batch Status: 8640/50000 (17%) | Loss: 1.619727
+Train Epoch: 7 | Batch Status: 8960/50000 (18%) | Loss: 1.602061
+Train Epoch: 7 | Batch Status: 9280/50000 (19%) | Loss: 1.530531
+Train Epoch: 7 | Batch Status: 9600/50000 (19%) | Loss: 1.638924
+Train Epoch: 7 | Batch Status: 9920/50000 (20%) | Loss: 1.740855
+Train Epoch: 7 | Batch Status: 10240/50000 (20%) | Loss: 1.817047
+Train Epoch: 7 | Batch Status: 10560/50000 (21%) | Loss: 1.510571
+Train Epoch: 7 | Batch Status: 10880/50000 (22%) | Loss: 1.587500
+Train Epoch: 7 | Batch Status: 11200/50000 (22%) | Loss: 1.524057
+Train Epoch: 7 | Batch Status: 11520/50000 (23%) | Loss: 1.486391
+Train Epoch: 7 | Batch Status: 11840/50000 (24%) | Loss: 1.552017
+Train Epoch: 7 | Batch Status: 12160/50000 (24%) | Loss: 1.619352
+Train Epoch: 7 | Batch Status: 12480/50000 (25%) | Loss: 1.242995
+Train Epoch: 7 | Batch Status: 12800/50000 (26%) | Loss: 0.976059
+Train Epoch: 7 | Batch Status: 13120/50000 (26%) | Loss: 1.366246
+Train Epoch: 7 | Batch Status: 13440/50000 (27%) | Loss: 1.656754
+Train Epoch: 7 | Batch Status: 13760/50000 (28%) | Loss: 1.235444
+Train Epoch: 7 | Batch Status: 14080/50000 (28%) | Loss: 1.424994
+Train Epoch: 7 | Batch Status: 14400/50000 (29%) | Loss: 1.570325
+Train Epoch: 7 | Batch Status: 14720/50000 (29%) | Loss: 1.030130
+Train Epoch: 7 | Batch Status: 15040/50000 (30%) | Loss: 1.624060
+Train Epoch: 7 | Batch Status: 15360/50000 (31%) | Loss: 1.497014
+Train Epoch: 7 | Batch Status: 15680/50000 (31%) | Loss: 1.760854
+Train Epoch: 7 | Batch Status: 16000/50000 (32%) | Loss: 1.440521
+Train Epoch: 7 | Batch Status: 16320/50000 (33%) | Loss: 1.507826
+Train Epoch: 7 | Batch Status: 16640/50000 (33%) | Loss: 1.471102
+Train Epoch: 7 | Batch Status: 16960/50000 (34%) | Loss: 1.533701
+Train Epoch: 7 | Batch Status: 17280/50000 (35%) | Loss: 1.512379
+Train Epoch: 7 | Batch Status: 17600/50000 (35%) | Loss: 1.905323
+Train Epoch: 7 | Batch Status: 17920/50000 (36%) | Loss: 1.406310
+Train Epoch: 7 | Batch Status: 18240/50000 (36%) | Loss: 1.420350
+Train Epoch: 7 | Batch Status: 18560/50000 (37%) | Loss: 1.289591
+Train Epoch: 7 | Batch Status: 18880/50000 (38%) | Loss: 1.327415
+Train Epoch: 7 | Batch Status: 19200/50000 (38%) | Loss: 1.662981
+Train Epoch: 7 | Batch Status: 19520/50000 (39%) | Loss: 1.150190
+Train Epoch: 7 | Batch Status: 19840/50000 (40%) | Loss: 1.428922
+Train Epoch: 7 | Batch Status: 20160/50000 (40%) | Loss: 1.328693
+Train Epoch: 7 | Batch Status: 20480/50000 (41%) | Loss: 1.604295
+Train Epoch: 7 | Batch Status: 20800/50000 (42%) | Loss: 1.260597
+Train Epoch: 7 | Batch Status: 21120/50000 (42%) | Loss: 1.383393
+Train Epoch: 7 | Batch Status: 21440/50000 (43%) | Loss: 1.265255
+Train Epoch: 7 | Batch Status: 21760/50000 (44%) | Loss: 1.259111
+Train Epoch: 7 | Batch Status: 22080/50000 (44%) | Loss: 1.274880
+Train Epoch: 7 | Batch Status: 22400/50000 (45%) | Loss: 1.809564
+Train Epoch: 7 | Batch Status: 22720/50000 (45%) | Loss: 1.558040
+Train Epoch: 7 | Batch Status: 23040/50000 (46%) | Loss: 1.475335
+Train Epoch: 7 | Batch Status: 23360/50000 (47%) | Loss: 1.169263
+Train Epoch: 7 | Batch Status: 23680/50000 (47%) | Loss: 1.489827
+Train Epoch: 7 | Batch Status: 24000/50000 (48%) | Loss: 1.378893
+Train Epoch: 7 | Batch Status: 24320/50000 (49%) | Loss: 1.668027
+Train Epoch: 7 | Batch Status: 24640/50000 (49%) | Loss: 1.449105
+Train Epoch: 7 | Batch Status: 24960/50000 (50%) | Loss: 1.575168
+Train Epoch: 7 | Batch Status: 25280/50000 (51%) | Loss: 1.459683
+Train Epoch: 7 | Batch Status: 25600/50000 (51%) | Loss: 1.185987
+Train Epoch: 7 | Batch Status: 25920/50000 (52%) | Loss: 1.310415
+Train Epoch: 7 | Batch Status: 26240/50000 (52%) | Loss: 1.206733
+Train Epoch: 7 | Batch Status: 26560/50000 (53%) | Loss: 1.315628
+Train Epoch: 7 | Batch Status: 26880/50000 (54%) | Loss: 1.545049
+Train Epoch: 7 | Batch Status: 27200/50000 (54%) | Loss: 1.470302
+Train Epoch: 7 | Batch Status: 27520/50000 (55%) | Loss: 1.238785
+Train Epoch: 7 | Batch Status: 27840/50000 (56%) | Loss: 1.645803
+Train Epoch: 7 | Batch Status: 28160/50000 (56%) | Loss: 1.251113
+Train Epoch: 7 | Batch Status: 28480/50000 (57%) | Loss: 1.392035
+Train Epoch: 7 | Batch Status: 28800/50000 (58%) | Loss: 1.701752
+Train Epoch: 7 | Batch Status: 29120/50000 (58%) | Loss: 1.285126
+Train Epoch: 7 | Batch Status: 29440/50000 (59%) | Loss: 1.610607
+Train Epoch: 7 | Batch Status: 29760/50000 (60%) | Loss: 1.086530
+Train Epoch: 7 | Batch Status: 30080/50000 (60%) | Loss: 1.195035
+Train Epoch: 7 | Batch Status: 30400/50000 (61%) | Loss: 1.499784
+Train Epoch: 7 | Batch Status: 30720/50000 (61%) | Loss: 1.276976
+Train Epoch: 7 | Batch Status: 31040/50000 (62%) | Loss: 1.525061
+Train Epoch: 7 | Batch Status: 31360/50000 (63%) | Loss: 1.371545
+Train Epoch: 7 | Batch Status: 31680/50000 (63%) | Loss: 1.186452
+Train Epoch: 7 | Batch Status: 32000/50000 (64%) | Loss: 1.198653
+Train Epoch: 7 | Batch Status: 32320/50000 (65%) | Loss: 1.220846
+Train Epoch: 7 | Batch Status: 32640/50000 (65%) | Loss: 1.420503
+Train Epoch: 7 | Batch Status: 32960/50000 (66%) | Loss: 1.375393
+Train Epoch: 7 | Batch Status: 33280/50000 (67%) | Loss: 1.438659
+Train Epoch: 7 | Batch Status: 33600/50000 (67%) | Loss: 1.514676
+Train Epoch: 7 | Batch Status: 33920/50000 (68%) | Loss: 1.278552
+Train Epoch: 7 | Batch Status: 34240/50000 (68%) | Loss: 1.417892
+Train Epoch: 7 | Batch Status: 34560/50000 (69%) | Loss: 1.393370
+Train Epoch: 7 | Batch Status: 34880/50000 (70%) | Loss: 1.676783
+Train Epoch: 7 | Batch Status: 35200/50000 (70%) | Loss: 1.341223
+Train Epoch: 7 | Batch Status: 35520/50000 (71%) | Loss: 1.643291
+Train Epoch: 7 | Batch Status: 35840/50000 (72%) | Loss: 1.532276
+Train Epoch: 7 | Batch Status: 36160/50000 (72%) | Loss: 1.400221
+Train Epoch: 7 | Batch Status: 36480/50000 (73%) | Loss: 1.178919
+Train Epoch: 7 | Batch Status: 36800/50000 (74%) | Loss: 1.499118
+Train Epoch: 7 | Batch Status: 37120/50000 (74%) | Loss: 1.294940
+Train Epoch: 7 | Batch Status: 37440/50000 (75%) | Loss: 1.297849
+Train Epoch: 7 | Batch Status: 37760/50000 (75%) | Loss: 1.431457
+Train Epoch: 7 | Batch Status: 38080/50000 (76%) | Loss: 1.241974
+Train Epoch: 7 | Batch Status: 38400/50000 (77%) | Loss: 1.289884
+Train Epoch: 7 | Batch Status: 38720/50000 (77%) | Loss: 1.565143
+Train Epoch: 7 | Batch Status: 39040/50000 (78%) | Loss: 1.501506
+Train Epoch: 7 | Batch Status: 39360/50000 (79%) | Loss: 1.281599
+Train Epoch: 7 | Batch Status: 39680/50000 (79%) | Loss: 1.521118
+Train Epoch: 7 | Batch Status: 40000/50000 (80%) | Loss: 0.999393
+Train Epoch: 7 | Batch Status: 40320/50000 (81%) | Loss: 1.350557
+Train Epoch: 7 | Batch Status: 40640/50000 (81%) | Loss: 1.133639
+Train Epoch: 7 | Batch Status: 40960/50000 (82%) | Loss: 1.287388
+Train Epoch: 7 | Batch Status: 41280/50000 (83%) | Loss: 1.300068
+Train Epoch: 7 | Batch Status: 41600/50000 (83%) | Loss: 1.076986
+Train Epoch: 7 | Batch Status: 41920/50000 (84%) | Loss: 1.270122
+Train Epoch: 7 | Batch Status: 42240/50000 (84%) | Loss: 1.573594
+Train Epoch: 7 | Batch Status: 42560/50000 (85%) | Loss: 1.649739
+Train Epoch: 7 | Batch Status: 42880/50000 (86%) | Loss: 1.521206
+Train Epoch: 7 | Batch Status: 43200/50000 (86%) | Loss: 1.170681
+Train Epoch: 7 | Batch Status: 43520/50000 (87%) | Loss: 1.308292
+Train Epoch: 7 | Batch Status: 43840/50000 (88%) | Loss: 1.628918
+Train Epoch: 7 | Batch Status: 44160/50000 (88%) | Loss: 1.314599
+Train Epoch: 7 | Batch Status: 44480/50000 (89%) | Loss: 1.044774
+Train Epoch: 7 | Batch Status: 44800/50000 (90%) | Loss: 1.316672
+Train Epoch: 7 | Batch Status: 45120/50000 (90%) | Loss: 1.402354
+Train Epoch: 7 | Batch Status: 45440/50000 (91%) | Loss: 1.512527
+Train Epoch: 7 | Batch Status: 45760/50000 (91%) | Loss: 1.006173
+Train Epoch: 7 | Batch Status: 46080/50000 (92%) | Loss: 1.697557
+Train Epoch: 7 | Batch Status: 46400/50000 (93%) | Loss: 1.183791
+Train Epoch: 7 | Batch Status: 46720/50000 (93%) | Loss: 1.095208
+Train Epoch: 7 | Batch Status: 47040/50000 (94%) | Loss: 1.390816
+Train Epoch: 7 | Batch Status: 47360/50000 (95%) | Loss: 1.520452
+Train Epoch: 7 | Batch Status: 47680/50000 (95%) | Loss: 1.684307
+Train Epoch: 7 | Batch Status: 48000/50000 (96%) | Loss: 1.283425
+Train Epoch: 7 | Batch Status: 48320/50000 (97%) | Loss: 1.877101
+Train Epoch: 7 | Batch Status: 48640/50000 (97%) | Loss: 1.216984
+Train Epoch: 7 | Batch Status: 48960/50000 (98%) | Loss: 1.290871
+Train Epoch: 7 | Batch Status: 49280/50000 (99%) | Loss: 1.660578
+Train Epoch: 7 | Batch Status: 49600/50000 (99%) | Loss: 1.415361
+Train Epoch: 7 | Batch Status: 49920/50000 (100%) | Loss: 1.448161
+Training time: 0m 30s
+===========================
+Test set: Average loss: 0.0465, Accuracy: 4699/10000 (47%)
+Testing time: 0m 32s
+Train Epoch: 8 | Batch Status: 0/50000 (0%) | Loss: 1.360481
+Train Epoch: 8 | Batch Status: 320/50000 (1%) | Loss: 1.353990
+Train Epoch: 8 | Batch Status: 640/50000 (1%) | Loss: 1.174793
+Train Epoch: 8 | Batch Status: 960/50000 (2%) | Loss: 1.664173
+Train Epoch: 8 | Batch Status: 1280/50000 (3%) | Loss: 1.250932
+Train Epoch: 8 | Batch Status: 1600/50000 (3%) | Loss: 1.525676
+Train Epoch: 8 | Batch Status: 1920/50000 (4%) | Loss: 1.238489
+Train Epoch: 8 | Batch Status: 2240/50000 (4%) | Loss: 1.824048
+Train Epoch: 8 | Batch Status: 2560/50000 (5%) | Loss: 1.648039
+Train Epoch: 8 | Batch Status: 2880/50000 (6%) | Loss: 1.469784
+Train Epoch: 8 | Batch Status: 3200/50000 (6%) | Loss: 1.341767
+Train Epoch: 8 | Batch Status: 3520/50000 (7%) | Loss: 1.461263
+Train Epoch: 8 | Batch Status: 3840/50000 (8%) | Loss: 1.502970
+Train Epoch: 8 | Batch Status: 4160/50000 (8%) | Loss: 1.301390
+Train Epoch: 8 | Batch Status: 4480/50000 (9%) | Loss: 1.759472
+Train Epoch: 8 | Batch Status: 4800/50000 (10%) | Loss: 1.263628
+Train Epoch: 8 | Batch Status: 5120/50000 (10%) | Loss: 1.326932
+Train Epoch: 8 | Batch Status: 5440/50000 (11%) | Loss: 1.228589
+Train Epoch: 8 | Batch Status: 5760/50000 (12%) | Loss: 1.532395
+Train Epoch: 8 | Batch Status: 6080/50000 (12%) | Loss: 1.316273
+Train Epoch: 8 | Batch Status: 6400/50000 (13%) | Loss: 1.208700
+Train Epoch: 8 | Batch Status: 6720/50000 (13%) | Loss: 1.275949
+Train Epoch: 8 | Batch Status: 7040/50000 (14%) | Loss: 1.241753
+Train Epoch: 8 | Batch Status: 7360/50000 (15%) | Loss: 1.721960
+Train Epoch: 8 | Batch Status: 7680/50000 (15%) | Loss: 1.278291
+Train Epoch: 8 | Batch Status: 8000/50000 (16%) | Loss: 1.636131
+Train Epoch: 8 | Batch Status: 8320/50000 (17%) | Loss: 1.500668
+Train Epoch: 8 | Batch Status: 8640/50000 (17%) | Loss: 1.640155
+Train Epoch: 8 | Batch Status: 8960/50000 (18%) | Loss: 1.280468
+Train Epoch: 8 | Batch Status: 9280/50000 (19%) | Loss: 1.254565
+Train Epoch: 8 | Batch Status: 9600/50000 (19%) | Loss: 1.135933
+Train Epoch: 8 | Batch Status: 9920/50000 (20%) | Loss: 1.708561
+Train Epoch: 8 | Batch Status: 10240/50000 (20%) | Loss: 1.462007
+Train Epoch: 8 | Batch Status: 10560/50000 (21%) | Loss: 1.859102
+Train Epoch: 8 | Batch Status: 10880/50000 (22%) | Loss: 1.352946
+Train Epoch: 8 | Batch Status: 11200/50000 (22%) | Loss: 1.721629
+Train Epoch: 8 | Batch Status: 11520/50000 (23%) | Loss: 1.173182
+Train Epoch: 8 | Batch Status: 11840/50000 (24%) | Loss: 1.474448
+Train Epoch: 8 | Batch Status: 12160/50000 (24%) | Loss: 1.287315
+Train Epoch: 8 | Batch Status: 12480/50000 (25%) | Loss: 1.211630
+Train Epoch: 8 | Batch Status: 12800/50000 (26%) | Loss: 1.427812
+Train Epoch: 8 | Batch Status: 13120/50000 (26%) | Loss: 1.251623
+Train Epoch: 8 | Batch Status: 13440/50000 (27%) | Loss: 1.374839
+Train Epoch: 8 | Batch Status: 13760/50000 (28%) | Loss: 1.375080
+Train Epoch: 8 | Batch Status: 14080/50000 (28%) | Loss: 1.202444
+Train Epoch: 8 | Batch Status: 14400/50000 (29%) | Loss: 1.376784
+Train Epoch: 8 | Batch Status: 14720/50000 (29%) | Loss: 1.596241
+Train Epoch: 8 | Batch Status: 15040/50000 (30%) | Loss: 1.437878
+Train Epoch: 8 | Batch Status: 15360/50000 (31%) | Loss: 1.375277
+Train Epoch: 8 | Batch Status: 15680/50000 (31%) | Loss: 1.623909
+Train Epoch: 8 | Batch Status: 16000/50000 (32%) | Loss: 1.565181
+Train Epoch: 8 | Batch Status: 16320/50000 (33%) | Loss: 1.482243
+Train Epoch: 8 | Batch Status: 16640/50000 (33%) | Loss: 1.527922
+Train Epoch: 8 | Batch Status: 16960/50000 (34%) | Loss: 1.430553
+Train Epoch: 8 | Batch Status: 17280/50000 (35%) | Loss: 1.443826
+Train Epoch: 8 | Batch Status: 17600/50000 (35%) | Loss: 1.262599
+Train Epoch: 8 | Batch Status: 17920/50000 (36%) | Loss: 1.368729
+Train Epoch: 8 | Batch Status: 18240/50000 (36%) | Loss: 0.997747
+Train Epoch: 8 | Batch Status: 18560/50000 (37%) | Loss: 1.376652
+Train Epoch: 8 | Batch Status: 18880/50000 (38%) | Loss: 1.293649
+Train Epoch: 8 | Batch Status: 19200/50000 (38%) | Loss: 1.558951
+Train Epoch: 8 | Batch Status: 19520/50000 (39%) | Loss: 1.339807
+Train Epoch: 8 | Batch Status: 19840/50000 (40%) | Loss: 1.167572
+Train Epoch: 8 | Batch Status: 20160/50000 (40%) | Loss: 1.584440
+Train Epoch: 8 | Batch Status: 20480/50000 (41%) | Loss: 1.495094
+Train Epoch: 8 | Batch Status: 20800/50000 (42%) | Loss: 1.478878
+Train Epoch: 8 | Batch Status: 21120/50000 (42%) | Loss: 1.431897
+Train Epoch: 8 | Batch Status: 21440/50000 (43%) | Loss: 1.178148
+Train Epoch: 8 | Batch Status: 21760/50000 (44%) | Loss: 1.383328
+Train Epoch: 8 | Batch Status: 22080/50000 (44%) | Loss: 1.130056
+Train Epoch: 8 | Batch Status: 22400/50000 (45%) | Loss: 1.480654
+Train Epoch: 8 | Batch Status: 22720/50000 (45%) | Loss: 1.282300
+Train Epoch: 8 | Batch Status: 23040/50000 (46%) | Loss: 1.150412
+Train Epoch: 8 | Batch Status: 23360/50000 (47%) | Loss: 1.081660
+Train Epoch: 8 | Batch Status: 23680/50000 (47%) | Loss: 1.031732
+Train Epoch: 8 | Batch Status: 24000/50000 (48%) | Loss: 1.235332
+Train Epoch: 8 | Batch Status: 24320/50000 (49%) | Loss: 1.381930
+Train Epoch: 8 | Batch Status: 24640/50000 (49%) | Loss: 1.503348
+Train Epoch: 8 | Batch Status: 24960/50000 (50%) | Loss: 1.153746
+Train Epoch: 8 | Batch Status: 25280/50000 (51%) | Loss: 1.470159
+Train Epoch: 8 | Batch Status: 25600/50000 (51%) | Loss: 1.611100
+Train Epoch: 8 | Batch Status: 25920/50000 (52%) | Loss: 1.269913
+Train Epoch: 8 | Batch Status: 26240/50000 (52%) | Loss: 1.111237
+Train Epoch: 8 | Batch Status: 26560/50000 (53%) | Loss: 1.067356
+Train Epoch: 8 | Batch Status: 26880/50000 (54%) | Loss: 1.491440
+Train Epoch: 8 | Batch Status: 27200/50000 (54%) | Loss: 1.602557
+Train Epoch: 8 | Batch Status: 27520/50000 (55%) | Loss: 1.364462
+Train Epoch: 8 | Batch Status: 27840/50000 (56%) | Loss: 1.334246
+Train Epoch: 8 | Batch Status: 28160/50000 (56%) | Loss: 1.207655
+Train Epoch: 8 | Batch Status: 28480/50000 (57%) | Loss: 1.312104
+Train Epoch: 8 | Batch Status: 28800/50000 (58%) | Loss: 1.524392
+Train Epoch: 8 | Batch Status: 29120/50000 (58%) | Loss: 1.255350
+Train Epoch: 8 | Batch Status: 29440/50000 (59%) | Loss: 1.422970
+Train Epoch: 8 | Batch Status: 29760/50000 (60%) | Loss: 1.369192
+Train Epoch: 8 | Batch Status: 30080/50000 (60%) | Loss: 1.099348
+Train Epoch: 8 | Batch Status: 30400/50000 (61%) | Loss: 1.571998
+Train Epoch: 8 | Batch Status: 30720/50000 (61%) | Loss: 1.553135
+Train Epoch: 8 | Batch Status: 31040/50000 (62%) | Loss: 1.167618
+Train Epoch: 8 | Batch Status: 31360/50000 (63%) | Loss: 1.205259
+Train Epoch: 8 | Batch Status: 31680/50000 (63%) | Loss: 1.352487
+Train Epoch: 8 | Batch Status: 32000/50000 (64%) | Loss: 1.653291
+Train Epoch: 8 | Batch Status: 32320/50000 (65%) | Loss: 1.485150
+Train Epoch: 8 | Batch Status: 32640/50000 (65%) | Loss: 1.129508
+Train Epoch: 8 | Batch Status: 32960/50000 (66%) | Loss: 1.417754
+Train Epoch: 8 | Batch Status: 33280/50000 (67%) | Loss: 1.407504
+Train Epoch: 8 | Batch Status: 33600/50000 (67%) | Loss: 1.716936
+Train Epoch: 8 | Batch Status: 33920/50000 (68%) | Loss: 1.050498
+Train Epoch: 8 | Batch Status: 34240/50000 (68%) | Loss: 1.290616
+Train Epoch: 8 | Batch Status: 34560/50000 (69%) | Loss: 1.359232
+Train Epoch: 8 | Batch Status: 34880/50000 (70%) | Loss: 1.368447
+Train Epoch: 8 | Batch Status: 35200/50000 (70%) | Loss: 1.400720
+Train Epoch: 8 | Batch Status: 35520/50000 (71%) | Loss: 1.007755
+Train Epoch: 8 | Batch Status: 35840/50000 (72%) | Loss: 1.740875
+Train Epoch: 8 | Batch Status: 36160/50000 (72%) | Loss: 1.269045
+Train Epoch: 8 | Batch Status: 36480/50000 (73%) | Loss: 1.729054
+Train Epoch: 8 | Batch Status: 36800/50000 (74%) | Loss: 1.587467
+Train Epoch: 8 | Batch Status: 37120/50000 (74%) | Loss: 1.220016
+Train Epoch: 8 | Batch Status: 37440/50000 (75%) | Loss: 1.185459
+Train Epoch: 8 | Batch Status: 37760/50000 (75%) | Loss: 1.075549
+Train Epoch: 8 | Batch Status: 38080/50000 (76%) | Loss: 1.155546
+Train Epoch: 8 | Batch Status: 38400/50000 (77%) | Loss: 1.360759
+Train Epoch: 8 | Batch Status: 38720/50000 (77%) | Loss: 1.539327
+Train Epoch: 8 | Batch Status: 39040/50000 (78%) | Loss: 1.711874
+Train Epoch: 8 | Batch Status: 39360/50000 (79%) | Loss: 1.634839
+Train Epoch: 8 | Batch Status: 39680/50000 (79%) | Loss: 1.514100
+Train Epoch: 8 | Batch Status: 40000/50000 (80%) | Loss: 1.384156
+Train Epoch: 8 | Batch Status: 40320/50000 (81%) | Loss: 1.566890
+Train Epoch: 8 | Batch Status: 40640/50000 (81%) | Loss: 1.680930
+Train Epoch: 8 | Batch Status: 40960/50000 (82%) | Loss: 1.585366
+Train Epoch: 8 | Batch Status: 41280/50000 (83%) | Loss: 1.476162
+Train Epoch: 8 | Batch Status: 41600/50000 (83%) | Loss: 1.636333
+Train Epoch: 8 | Batch Status: 41920/50000 (84%) | Loss: 1.336673
+Train Epoch: 8 | Batch Status: 42240/50000 (84%) | Loss: 1.282608
+Train Epoch: 8 | Batch Status: 42560/50000 (85%) | Loss: 1.313355
+Train Epoch: 8 | Batch Status: 42880/50000 (86%) | Loss: 1.717598
+Train Epoch: 8 | Batch Status: 43200/50000 (86%) | Loss: 1.252124
+Train Epoch: 8 | Batch Status: 43520/50000 (87%) | Loss: 1.340857
+Train Epoch: 8 | Batch Status: 43840/50000 (88%) | Loss: 1.387808
+Train Epoch: 8 | Batch Status: 44160/50000 (88%) | Loss: 1.569612
+Train Epoch: 8 | Batch Status: 44480/50000 (89%) | Loss: 1.124055
+Train Epoch: 8 | Batch Status: 44800/50000 (90%) | Loss: 1.384757
+Train Epoch: 8 | Batch Status: 45120/50000 (90%) | Loss: 1.472401
+Train Epoch: 8 | Batch Status: 45440/50000 (91%) | Loss: 1.099457
+Train Epoch: 8 | Batch Status: 45760/50000 (91%) | Loss: 1.957861
+Train Epoch: 8 | Batch Status: 46080/50000 (92%) | Loss: 1.528018
+Train Epoch: 8 | Batch Status: 46400/50000 (93%) | Loss: 1.455125
+Train Epoch: 8 | Batch Status: 46720/50000 (93%) | Loss: 1.312774
+Train Epoch: 8 | Batch Status: 47040/50000 (94%) | Loss: 1.431150
+Train Epoch: 8 | Batch Status: 47360/50000 (95%) | Loss: 1.262947
+Train Epoch: 8 | Batch Status: 47680/50000 (95%) | Loss: 1.389674
+Train Epoch: 8 | Batch Status: 48000/50000 (96%) | Loss: 1.473577
+Train Epoch: 8 | Batch Status: 48320/50000 (97%) | Loss: 1.421554
+Train Epoch: 8 | Batch Status: 48640/50000 (97%) | Loss: 1.391884
+Train Epoch: 8 | Batch Status: 48960/50000 (98%) | Loss: 1.379599
+Train Epoch: 8 | Batch Status: 49280/50000 (99%) | Loss: 1.340738
+Train Epoch: 8 | Batch Status: 49600/50000 (99%) | Loss: 1.398841
+Train Epoch: 8 | Batch Status: 49920/50000 (100%) | Loss: 1.379272
+Training time: 0m 33s
+===========================
+Test set: Average loss: 0.0474, Accuracy: 4589/10000 (46%)
+Testing time: 0m 35s
+Train Epoch: 9 | Batch Status: 0/50000 (0%) | Loss: 1.089846
+Train Epoch: 9 | Batch Status: 320/50000 (1%) | Loss: 1.141781
+Train Epoch: 9 | Batch Status: 640/50000 (1%) | Loss: 1.270725
+Train Epoch: 9 | Batch Status: 960/50000 (2%) | Loss: 1.462990
+Train Epoch: 9 | Batch Status: 1280/50000 (3%) | Loss: 1.254381
+Train Epoch: 9 | Batch Status: 1600/50000 (3%) | Loss: 1.397381
+Train Epoch: 9 | Batch Status: 1920/50000 (4%) | Loss: 1.447682
+Train Epoch: 9 | Batch Status: 2240/50000 (4%) | Loss: 1.537725
+Train Epoch: 9 | Batch Status: 2560/50000 (5%) | Loss: 1.389745
+Train Epoch: 9 | Batch Status: 2880/50000 (6%) | Loss: 1.270982
+Train Epoch: 9 | Batch Status: 3200/50000 (6%) | Loss: 1.755939
+Train Epoch: 9 | Batch Status: 3520/50000 (7%) | Loss: 1.115955
+Train Epoch: 9 | Batch Status: 3840/50000 (8%) | Loss: 1.310759
+Train Epoch: 9 | Batch Status: 4160/50000 (8%) | Loss: 1.082396
+Train Epoch: 9 | Batch Status: 4480/50000 (9%) | Loss: 1.194837
+Train Epoch: 9 | Batch Status: 4800/50000 (10%) | Loss: 1.424884
+Train Epoch: 9 | Batch Status: 5120/50000 (10%) | Loss: 1.148884
+Train Epoch: 9 | Batch Status: 5440/50000 (11%) | Loss: 1.385883
+Train Epoch: 9 | Batch Status: 5760/50000 (12%) | Loss: 1.263817
+Train Epoch: 9 | Batch Status: 6080/50000 (12%) | Loss: 1.401880
+Train Epoch: 9 | Batch Status: 6400/50000 (13%) | Loss: 1.114023
+Train Epoch: 9 | Batch Status: 6720/50000 (13%) | Loss: 1.517482
+Train Epoch: 9 | Batch Status: 7040/50000 (14%) | Loss: 1.259728
+Train Epoch: 9 | Batch Status: 7360/50000 (15%) | Loss: 1.382126
+Train Epoch: 9 | Batch Status: 7680/50000 (15%) | Loss: 1.256355
+Train Epoch: 9 | Batch Status: 8000/50000 (16%) | Loss: 1.170183
+Train Epoch: 9 | Batch Status: 8320/50000 (17%) | Loss: 1.268056
+Train Epoch: 9 | Batch Status: 8640/50000 (17%) | Loss: 1.435444
+Train Epoch: 9 | Batch Status: 8960/50000 (18%) | Loss: 1.258429
+Train Epoch: 9 | Batch Status: 9280/50000 (19%) | Loss: 1.242438
+Train Epoch: 9 | Batch Status: 9600/50000 (19%) | Loss: 0.951998
+Train Epoch: 9 | Batch Status: 9920/50000 (20%) | Loss: 1.370086
+Train Epoch: 9 | Batch Status: 10240/50000 (20%) | Loss: 0.934815
+Train Epoch: 9 | Batch Status: 10560/50000 (21%) | Loss: 1.140325
+Train Epoch: 9 | Batch Status: 10880/50000 (22%) | Loss: 1.471467
+Train Epoch: 9 | Batch Status: 11200/50000 (22%) | Loss: 1.215783
+Train Epoch: 9 | Batch Status: 11520/50000 (23%) | Loss: 1.285510
+Train Epoch: 9 | Batch Status: 11840/50000 (24%) | Loss: 1.510617
+Train Epoch: 9 | Batch Status: 12160/50000 (24%) | Loss: 1.277161
+Train Epoch: 9 | Batch Status: 12480/50000 (25%) | Loss: 1.331753
+Train Epoch: 9 | Batch Status: 12800/50000 (26%) | Loss: 1.506740
+Train Epoch: 9 | Batch Status: 13120/50000 (26%) | Loss: 0.976346
+Train Epoch: 9 | Batch Status: 13440/50000 (27%) | Loss: 1.589473
+Train Epoch: 9 | Batch Status: 13760/50000 (28%) | Loss: 1.351210
+Train Epoch: 9 | Batch Status: 14080/50000 (28%) | Loss: 1.510485
+Train Epoch: 9 | Batch Status: 14400/50000 (29%) | Loss: 1.455300
+Train Epoch: 9 | Batch Status: 14720/50000 (29%) | Loss: 1.311539
+Train Epoch: 9 | Batch Status: 15040/50000 (30%) | Loss: 1.806733
+Train Epoch: 9 | Batch Status: 15360/50000 (31%) | Loss: 1.608771
+Train Epoch: 9 | Batch Status: 15680/50000 (31%) | Loss: 1.394233
+Train Epoch: 9 | Batch Status: 16000/50000 (32%) | Loss: 1.173227
+Train Epoch: 9 | Batch Status: 16320/50000 (33%) | Loss: 1.272523
+Train Epoch: 9 | Batch Status: 16640/50000 (33%) | Loss: 1.511478
+Train Epoch: 9 | Batch Status: 16960/50000 (34%) | Loss: 1.568156
+Train Epoch: 9 | Batch Status: 17280/50000 (35%) | Loss: 1.131572
+Train Epoch: 9 | Batch Status: 17600/50000 (35%) | Loss: 1.389734
+Train Epoch: 9 | Batch Status: 17920/50000 (36%) | Loss: 1.451141
+Train Epoch: 9 | Batch Status: 18240/50000 (36%) | Loss: 1.555425
+Train Epoch: 9 | Batch Status: 18560/50000 (37%) | Loss: 1.240351
+Train Epoch: 9 | Batch Status: 18880/50000 (38%) | Loss: 1.400126
+Train Epoch: 9 | Batch Status: 19200/50000 (38%) | Loss: 1.358162
+Train Epoch: 9 | Batch Status: 19520/50000 (39%) | Loss: 1.190016
+Train Epoch: 9 | Batch Status: 19840/50000 (40%) | Loss: 1.527532
+Train Epoch: 9 | Batch Status: 20160/50000 (40%) | Loss: 1.284206
+Train Epoch: 9 | Batch Status: 20480/50000 (41%) | Loss: 1.430352
+Train Epoch: 9 | Batch Status: 20800/50000 (42%) | Loss: 1.327399
+Train Epoch: 9 | Batch Status: 21120/50000 (42%) | Loss: 0.975173
+Train Epoch: 9 | Batch Status: 21440/50000 (43%) | Loss: 1.318224
+Train Epoch: 9 | Batch Status: 21760/50000 (44%) | Loss: 1.082517
+Train Epoch: 9 | Batch Status: 22080/50000 (44%) | Loss: 1.426247
+Train Epoch: 9 | Batch Status: 22400/50000 (45%) | Loss: 1.196399
+Train Epoch: 9 | Batch Status: 22720/50000 (45%) | Loss: 1.150432
+Train Epoch: 9 | Batch Status: 23040/50000 (46%) | Loss: 1.439035
+Train Epoch: 9 | Batch Status: 23360/50000 (47%) | Loss: 1.337542
+Train Epoch: 9 | Batch Status: 23680/50000 (47%) | Loss: 1.563007
+Train Epoch: 9 | Batch Status: 24000/50000 (48%) | Loss: 1.669708
+Train Epoch: 9 | Batch Status: 24320/50000 (49%) | Loss: 0.988964
+Train Epoch: 9 | Batch Status: 24640/50000 (49%) | Loss: 1.324760
+Train Epoch: 9 | Batch Status: 24960/50000 (50%) | Loss: 1.421879
+Train Epoch: 9 | Batch Status: 25280/50000 (51%) | Loss: 1.308685
+Train Epoch: 9 | Batch Status: 25600/50000 (51%) | Loss: 1.369923
+Train Epoch: 9 | Batch Status: 25920/50000 (52%) | Loss: 0.985262
+Train Epoch: 9 | Batch Status: 26240/50000 (52%) | Loss: 1.165352
+Train Epoch: 9 | Batch Status: 26560/50000 (53%) | Loss: 1.491827
+Train Epoch: 9 | Batch Status: 26880/50000 (54%) | Loss: 1.244178
+Train Epoch: 9 | Batch Status: 27200/50000 (54%) | Loss: 1.285369
+Train Epoch: 9 | Batch Status: 27520/50000 (55%) | Loss: 1.472398
+Train Epoch: 9 | Batch Status: 27840/50000 (56%) | Loss: 1.204671
+Train Epoch: 9 | Batch Status: 28160/50000 (56%) | Loss: 0.829918
+Train Epoch: 9 | Batch Status: 28480/50000 (57%) | Loss: 1.539305
+Train Epoch: 9 | Batch Status: 28800/50000 (58%) | Loss: 1.237122
+Train Epoch: 9 | Batch Status: 29120/50000 (58%) | Loss: 1.320221
+Train Epoch: 9 | Batch Status: 29440/50000 (59%) | Loss: 1.387224
+Train Epoch: 9 | Batch Status: 29760/50000 (60%) | Loss: 1.602892
+Train Epoch: 9 | Batch Status: 30080/50000 (60%) | Loss: 1.591226
+Train Epoch: 9 | Batch Status: 30400/50000 (61%) | Loss: 1.336333
+Train Epoch: 9 | Batch Status: 30720/50000 (61%) | Loss: 1.456964
+Train Epoch: 9 | Batch Status: 31040/50000 (62%) | Loss: 1.301253
+Train Epoch: 9 | Batch Status: 31360/50000 (63%) | Loss: 1.055462
+Train Epoch: 9 | Batch Status: 31680/50000 (63%) | Loss: 1.567389
+Train Epoch: 9 | Batch Status: 32000/50000 (64%) | Loss: 1.193797
+Train Epoch: 9 | Batch Status: 32320/50000 (65%) | Loss: 1.042589
+Train Epoch: 9 | Batch Status: 32640/50000 (65%) | Loss: 1.191110
+Train Epoch: 9 | Batch Status: 32960/50000 (66%) | Loss: 1.821866
+Train Epoch: 9 | Batch Status: 33280/50000 (67%) | Loss: 1.317888
+Train Epoch: 9 | Batch Status: 33600/50000 (67%) | Loss: 1.447244
+Train Epoch: 9 | Batch Status: 33920/50000 (68%) | Loss: 1.235880
+Train Epoch: 9 | Batch Status: 34240/50000 (68%) | Loss: 1.060922
+Train Epoch: 9 | Batch Status: 34560/50000 (69%) | Loss: 1.205280
+Train Epoch: 9 | Batch Status: 34880/50000 (70%) | Loss: 1.678519
+Train Epoch: 9 | Batch Status: 35200/50000 (70%) | Loss: 1.195754
+Train Epoch: 9 | Batch Status: 35520/50000 (71%) | Loss: 1.238898
+Train Epoch: 9 | Batch Status: 35840/50000 (72%) | Loss: 1.318561
+Train Epoch: 9 | Batch Status: 36160/50000 (72%) | Loss: 1.069075
+Train Epoch: 9 | Batch Status: 36480/50000 (73%) | Loss: 0.998314
+Train Epoch: 9 | Batch Status: 36800/50000 (74%) | Loss: 1.338817
+Train Epoch: 9 | Batch Status: 37120/50000 (74%) | Loss: 1.119471
+Train Epoch: 9 | Batch Status: 37440/50000 (75%) | Loss: 1.402964
+Train Epoch: 9 | Batch Status: 37760/50000 (75%) | Loss: 1.502493
+Train Epoch: 9 | Batch Status: 38080/50000 (76%) | Loss: 1.158425
+Train Epoch: 9 | Batch Status: 38400/50000 (77%) | Loss: 1.382809
+Train Epoch: 9 | Batch Status: 38720/50000 (77%) | Loss: 1.046042
+Train Epoch: 9 | Batch Status: 39040/50000 (78%) | Loss: 1.672759
+Train Epoch: 9 | Batch Status: 39360/50000 (79%) | Loss: 1.372040
+Train Epoch: 9 | Batch Status: 39680/50000 (79%) | Loss: 1.650062
+Train Epoch: 9 | Batch Status: 40000/50000 (80%) | Loss: 1.566518
+Train Epoch: 9 | Batch Status: 40320/50000 (81%) | Loss: 1.394766
+Train Epoch: 9 | Batch Status: 40640/50000 (81%) | Loss: 1.169186
+Train Epoch: 9 | Batch Status: 40960/50000 (82%) | Loss: 1.203175
+Train Epoch: 9 | Batch Status: 41280/50000 (83%) | Loss: 1.863381
+Train Epoch: 9 | Batch Status: 41600/50000 (83%) | Loss: 1.431501
+Train Epoch: 9 | Batch Status: 41920/50000 (84%) | Loss: 1.113098
+Train Epoch: 9 | Batch Status: 42240/50000 (84%) | Loss: 1.490969
+Train Epoch: 9 | Batch Status: 42560/50000 (85%) | Loss: 1.304965
+Train Epoch: 9 | Batch Status: 42880/50000 (86%) | Loss: 1.447932
+Train Epoch: 9 | Batch Status: 43200/50000 (86%) | Loss: 1.348767
+Train Epoch: 9 | Batch Status: 43520/50000 (87%) | Loss: 1.145685
+Train Epoch: 9 | Batch Status: 43840/50000 (88%) | Loss: 1.495879
+Train Epoch: 9 | Batch Status: 44160/50000 (88%) | Loss: 1.356529
+Train Epoch: 9 | Batch Status: 44480/50000 (89%) | Loss: 1.364448
+Train Epoch: 9 | Batch Status: 44800/50000 (90%) | Loss: 1.433426
+Train Epoch: 9 | Batch Status: 45120/50000 (90%) | Loss: 1.252172
+Train Epoch: 9 | Batch Status: 45440/50000 (91%) | Loss: 1.321805
+Train Epoch: 9 | Batch Status: 45760/50000 (91%) | Loss: 1.298374
+Train Epoch: 9 | Batch Status: 46080/50000 (92%) | Loss: 1.266198
+Train Epoch: 9 | Batch Status: 46400/50000 (93%) | Loss: 1.446264
+Train Epoch: 9 | Batch Status: 46720/50000 (93%) | Loss: 1.683252
+Train Epoch: 9 | Batch Status: 47040/50000 (94%) | Loss: 1.256743
+Train Epoch: 9 | Batch Status: 47360/50000 (95%) | Loss: 1.208517
+Train Epoch: 9 | Batch Status: 47680/50000 (95%) | Loss: 1.203020
+Train Epoch: 9 | Batch Status: 48000/50000 (96%) | Loss: 1.171417
+Train Epoch: 9 | Batch Status: 48320/50000 (97%) | Loss: 1.109125
+Train Epoch: 9 | Batch Status: 48640/50000 (97%) | Loss: 1.455599
+Train Epoch: 9 | Batch Status: 48960/50000 (98%) | Loss: 1.456237
+Train Epoch: 9 | Batch Status: 49280/50000 (99%) | Loss: 1.597454
+Train Epoch: 9 | Batch Status: 49600/50000 (99%) | Loss: 1.338786
+Train Epoch: 9 | Batch Status: 49920/50000 (100%) | Loss: 1.034724
+Training time: 0m 30s
+===========================
+Test set: Average loss: 0.0443, Accuracy: 5019/10000 (50%)
+Testing time: 0m 33s
+Total Time: 4m 60s
+Model was trained on cpu!
+      """
