@@ -122,7 +122,7 @@ def test():
 
 # main에서 실행
 # time 함수로 현재 시간 구함
-# 14번 반복
+# 15번 반복
 if __name__ == '__main__':
     for epoch in range(1, 15):
         # 학습 훈련을 시작
