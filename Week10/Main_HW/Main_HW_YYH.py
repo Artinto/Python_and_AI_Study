@@ -881,3 +881,4 @@ Test set: Average loss: 0.0240, Accuracy: 4668/10000 (47%)
 Testing time: 1m 33s
 Total Time: 14m 1s
 Model was trained on cpu!
+'''
