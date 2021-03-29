@@ -351,9 +351,9 @@
 - **스터디 진행**
    - 5~6강 발표 & 어려웠던 내용 질문
       - 5강: Linear Regression
-            > [5강 발표자료](https://github.com/hunkim/PyTorchZeroToAll/files/6022315/Linear.Regression.in.PyTorch.way.pptx)
+        > [5강 발표자료](https://github.com/hunkim/PyTorchZeroToAll/files/6022315/Linear.Regression.in.PyTorch.way.pptx)
       - 6강: Logistic Regression
-            > [6강 발표자료](https://github.com/hunkim/PyTorchZeroToAll/files/6022314/default.pptx)
+        > [6강 발표자료](https://github.com/hunkim/PyTorchZeroToAll/files/6022314/default.pptx)
    
    - 지난 주차 예제 코드 돌아가면서 설명
    
@@ -422,10 +422,10 @@
 - **스터디 진행**
    - 7~8강 발표 & 어려웠던 내용 질문
       - 7강: Wide and Deep
-      > [7강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/6221934/wide.and.deep.pptx)
+        > [7강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/6221934/wide.and.deep.pptx)
 
       - 8강: Pytorch Dataloader
-      > [8강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/6221924/8._DataLoader_.pptx)
+        > [8강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/6221924/8._DataLoader_.pptx)
    - 지난 주차 예제 코드 돌아가면서 설명
    
 - **과제 공지**
@@ -456,7 +456,7 @@
 - **스터디 진행**
    - 9강 발표 & 어려웠던 내용 질문
       - 9강: Softmax Classifier
-      > [9강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/6221918/softmax.classfier.pptx)
+        > [9강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/6221918/softmax.classfier.pptx)
 
    
    - 지난 주차 예제 코드 돌아가면서 설명
@@ -510,7 +510,7 @@
 - **스터디 진행**
    - 10강 발표 & 어려웠던 내용 질문
       - 10강: Basic CNN
-      > [10강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/6221898/Basic.CNN.pptx)
+        > [10강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/6221898/Basic.CNN.pptx)
    
    - 지난 주차 예제 코드 돌아가면서 설명
    
