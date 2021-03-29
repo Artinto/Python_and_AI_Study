@@ -32,7 +32,7 @@ class Net(nn.Module):
         # Default value => padding = 0 , stride = 1 
         
         # 입력 Channel = 3 
-        # 출력 Channel = 30
+        # 출력 Channel = 20
         self.conv1 = nn.Conv2d(3, 10, kernel_size=5)   
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         
@@ -40,7 +40,7 @@ class Net(nn.Module):
         # Max Pooling kernel size = 2x2
         # Default value => padding = 0 , stride = 1 
         
-        # 공간 데이터를 Flatten -> Dense Net 3 layers
+        # 공간 데이터를 Flatten -> Dense Net 4 layers
         self.fc1 = nn.Linear(500, 320) 
         self.fc2 = nn.Linear(320, 160) 
         self.fc3 = nn.Linear(160, 80)
