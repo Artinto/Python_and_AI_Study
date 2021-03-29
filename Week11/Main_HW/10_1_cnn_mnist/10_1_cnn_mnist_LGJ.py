@@ -46,8 +46,7 @@ class Net(nn.Module): # nn.Module의 상속을 받는 신경망 클래스 작성
         x = F.relu(self.mp(self.conv2(x))) # 합성곱 신경망 conv2을 maxpool을 적용하고, relu함수로 돌림
         x = x.view(in_size, -1)  # flatten the tensor
         x = self.fc(x) # 선형함수를 적용
-        return F.log_softmax(x)
-
+        return F.log_softmax(x) # NLLLoss를 사용하므로 마지막에 logsoftmax를 적용
 
 model = Net() # model에Net 클래스 적용
 
@@ -60,7 +59,7 @@ def train(epoch):
         data, target = Variable(data), Variable(target)
         optimizer.zero_grad()
         output = model(data)
-        loss = F.nll_loss(output, target)
+        loss = F.nll_loss(output, target) # NLL(Negative Log-Likehood)Loss를 사용하여 학습값과 참값을 비교함.
         loss.backward()
         optimizer.step()
         if batch_idx % 10 == 0:
@@ -74,12 +73,12 @@ def test():
     test_loss = 0
     correct = 0
     for data, target in test_loader: # test_loader를 이용하여 각각의 배치사이즈의 data, target를 불러옴
-        data, target = Variable(data, volatile=True), Variable(target)
+        data, target = Variable(data, volatile=True), Variable(target) # volatile: 변수를 메모리에 저장한다.
         output = model(data)
         # sum up batch loss
-        test_loss += F.nll_loss(output, target, size_average=False).data
+        test_loss += F.nll_loss(output, target, size_average=False).data # NLL(Negative Log-Likehood)Loss를 사용하여 테스트값과 값을 비교함.
         # get the index of the max log-probability
-        pred = output.data.max(1, keepdim=True)[1]
+        pred = output.data.max(1, keepdim=True)[1] # 가장 큰 클래스의 인덱스값으로 예측한다.
         correct += pred.eq(target.data.view_as(pred)).cpu().sum() # 예측값과 타겟 데이터를 비교하여 얼마나 옳았는지 합을 계산
 
     test_loss /= len(test_loader.dataset)
