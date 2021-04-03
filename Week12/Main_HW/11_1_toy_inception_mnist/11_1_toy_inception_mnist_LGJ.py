@@ -35,19 +35,19 @@ class InceptionA(nn.Module): # 인셉션
 
     def __init__(self, in_channels):
         super(InceptionA, self).__init__()
-        self.branch1x1 = nn.Conv2d(in_channels, 16, kernel_size=1)
+        self.branch1x1 = nn.Conv2d(in_channels, 16, kernel_size=1) # (1x1)커널을 사용하여 in_channels에서 16개의 채널을 생성
 
-        self.branch5x5_1 = nn.Conv2d(in_channels, 16, kernel_size=1)
-        self.branch5x5_2 = nn.Conv2d(16, 24, kernel_size=5, padding=2)
+        self.branch5x5_1 = nn.Conv2d(in_channels, 16, kernel_size=1) # (1x1)커널을 사용하여 in_channels에서 16개의 채널을 생성
+        self.branch5x5_2 = nn.Conv2d(16, 24, kernel_size=5, padding=2) # (5x5)커널을 사용하여 16개의 채널에서 24개의 채널을 생성, 패딩은 바깥으로 2픽셀
 
-        self.branch3x3dbl_1 = nn.Conv2d(in_channels, 16, kernel_size=1)
-        self.branch3x3dbl_2 = nn.Conv2d(16, 24, kernel_size=3, padding=1)
-        self.branch3x3dbl_3 = nn.Conv2d(24, 24, kernel_size=3, padding=1)
+        self.branch3x3dbl_1 = nn.Conv2d(in_channels, 16, kernel_size=1) # (1x1)커널을 사용하여 in_channels에서 16개의 채널을 생성
+        self.branch3x3dbl_2 = nn.Conv2d(16, 24, kernel_size=3, padding=1) # (3x3)커널을 사용하여 16개의 채널에서 24개의 채널을 생성, 패딩은 바깥으로 1픽셀
+        self.branch3x3dbl_3 = nn.Conv2d(24, 24, kernel_size=3, padding=1) # (3x3)커널을 사용하여 24개의 채널에서 24개의 채널을 생성, 패딩은 바깥으로 1픽셀
 
         self.branch_pool = nn.Conv2d(in_channels, 24, kernel_size=1)
 
     def forward(self, x):
-        branch1x1 = self.branch1x1(x)
+        branch1x1 = self.branch1x1(x) # Conv2d함수를 시행
 
         branch5x5 = self.branch5x5_1(x)
         branch5x5 = self.branch5x5_2(branch5x5)
@@ -59,8 +59,8 @@ class InceptionA(nn.Module): # 인셉션
         branch_pool = F.avg_pool2d(x, kernel_size=3, stride=1, padding=1)
         branch_pool = self.branch_pool(branch_pool)
 
-        outputs = [branch1x1, branch5x5, branch3x3dbl, branch_pool]
-        return torch.cat(outputs, 1)
+        outputs = [branch1x1, branch5x5, branch3x3dbl, branch_pool] # 최종 아웃풋 리스트
+        return torch.cat(outputs, 1) # 텐서를 합침
 
 
 class Net(nn.Module): # nn.Module의 상속을 받는 신경망 클래스 Net 작성
