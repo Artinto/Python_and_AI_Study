@@ -265,7 +265,7 @@
 
 
 ### ◼ 인공지능 발표 일정 및 발표자 
-![image](https://user-images.githubusercontent.com/42428487/107225505-385bae00-6a5c-11eb-81d3-db8a213a07d0.png)
+![image](https://user-images.githubusercontent.com/53847442/113576074-da150b00-9659-11eb-9034-aab865350ea5.png)
 
 <br>
 
