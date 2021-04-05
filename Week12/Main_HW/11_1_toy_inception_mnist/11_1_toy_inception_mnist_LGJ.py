@@ -1,6 +1,6 @@
 # https://github.com/pytorch/examples/blob/master/mnist/main.py
 from __future__ import print_function
-import argparse
+import argparse # 필요한 명령행 인자를 파 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
