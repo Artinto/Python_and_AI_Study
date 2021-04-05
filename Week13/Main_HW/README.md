@@ -11,7 +11,7 @@
 ## 실습 설명
 ### ◼ 데이터
 
-- [**데이터셋**]()
+- [**데이터셋**](https://github.com/Artinto/Python_and_AI_Study/tree/main/Week13/custom_dataset)
 
 - **정보**
    - **4개의 클래스 - label 정보 : 0(오징어짬뽕), 1(비빔면), 2(짜왕), 3(무파마)**
