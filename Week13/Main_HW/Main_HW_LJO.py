@@ -40,8 +40,8 @@ class Net(nn.Module):
         #print(x.shape)
         x = F.relu(self.pool(self.conv1(x))) 
         x = F.relu(self.pool(self.conv2(x)))
-        #print(x.shape)
         x = x.view(in_size, -1)
+        #print(x.shape)
         x = self.fc1(x)
         x = self.fc2(x)
         return x
@@ -55,10 +55,10 @@ for epoch in range(5):
     loss_sum = 0
     correct1 = 0
     total1 = 0
-    for i, data in enumerate(trainloader,0):
+    for i, data in enumerate(train_loader,0):
         inputs,labels = data[0].to(device),data[1].to(device)
         optimizer.zero_grad()
-        outputs = img(inputs)
+        outputs = model(inputs)
         loss = criterion(outputs,labels)
         loss.backward()
         optimizer.step()
@@ -75,9 +75,9 @@ for epoch in range(5):
 correct = 0
 total = 0
 with torch.no_grad():
-    for data in testloader:
+    for data in test_loader:
         images, labels = data[0].to(device),data[1].to(device)
-        outputs = img(images)
+        outputs = model(images)
         _, pred1 = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += (pred1 == labels).sum().item()
