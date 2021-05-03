@@ -85,24 +85,24 @@ print('Accuracy of test images: %d %%' % (100 * correct / total))
 
 #결과
 1949 100
-[1, 1] loss: 0.002
-[1, 51] loss: 0.208
-[1, 101] loss: 0.299
-epoch 1 Accuracy: 89 %
-[2, 1] loss: 0.003
-[2, 51] loss: 0.222
-[2, 101] loss: 0.207
-epoch 2 Accuracy: 92 %
-[3, 1] loss: 0.006
-[3, 51] loss: 0.234
-[3, 101] loss: 0.326
-epoch 3 Accuracy: 88 %
-[4, 1] loss: 0.003
-[4, 51] loss: 0.193
-[4, 101] loss: 0.204
-epoch 4 Accuracy: 92 %
-[5, 1] loss: 0.005
-[5, 51] loss: 0.131
-[5, 101] loss: 0.174
-epoch 5 Accuracy: 94 %
-Accuracy of test images: 90 %
+[1, 1] loss: 0.001
+[1, 51] loss: 0.075
+[1, 101] loss: 0.071
+epoch 1 Accuracy: 96 %
+[2, 1] loss: 0.002
+[2, 51] loss: 0.077
+[2, 101] loss: 0.096
+epoch 2 Accuracy: 97 %
+[3, 1] loss: 0.001
+[3, 51] loss: 0.078
+[3, 101] loss: 0.197
+epoch 3 Accuracy: 94 %
+[4, 1] loss: 0.002
+[4, 51] loss: 0.118
+[4, 101] loss: 0.123
+epoch 4 Accuracy: 95 %
+[5, 1] loss: 0.001
+[5, 51] loss: 0.103
+[5, 101] loss: 0.186
+epoch 5 Accuracy: 95 %
+Accuracy of test images: 86 %
