@@ -351,4 +351,4 @@ Train Epoch: 9 [1600/1949 (82%)]	Loss: 0.144776
 Train Epoch: 9 [1760/1949 (90%)]	Loss: 0.148000
 Train Epoch: 9 [1920/1949 (98%)]	Loss: 0.172169
 
-Test set: Average loss: 0.3738, Accuracy: 89/100 (89%
+Test set: Average loss: 0.3738, Accuracy: 89/100 (89%)
