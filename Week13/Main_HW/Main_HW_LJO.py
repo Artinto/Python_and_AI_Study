@@ -67,7 +67,7 @@ for epoch in range(5):
         total1 += labels.size(0)
         correct1 += (pred==labels).sum().item()
         loss_sum += loss.item()
-        if i % 50 == 0:    # print every 2000 mini-batches
+        if i % 50 == 0:    
             print('[%d, %1d] loss: %.3f' %(epoch + 1, i + 1, loss_sum / 50))
             loss_sum = 0.0
     print('epoch %d Accuracy: %d %%' %(epoch+1, 100*correct1/total1))
