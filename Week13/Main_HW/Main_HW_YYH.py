@@ -28,12 +28,12 @@ import torch.nn.functional as F
 trainset = ImageFolder("/content/drive/MyDrive/custom_dataset/train",
                          transform=transforms.Compose([transforms.RandomCrop(100),
                                                        transforms.ToTensor(),
-                                                       transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5)]))
+                                                       transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))]))
 
 testset = ImageFolder("/content/drive/MyDrive/custom_dataset/test",
                         transform=transforms.Compose([transforms.RandomCrop(100),
                                                       transforms.ToTensor(),
-                                                      transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5)]))
+                                                      transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))]))
                                                       
 train_loader = data.DataLoader(trainset, batch_size=32, shuffle=True)
 test_loader = data.DataLoader(testset, batch_size=32, shuffle=True)
