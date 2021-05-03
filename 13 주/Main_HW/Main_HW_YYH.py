@@ -134,3 +134,94 @@ def test():
 for epoch in range(1, 10):
     train(epoch)
     test()
+
+    Train Epoch: 1 [0/1949 (0%)]	Loss: 3.465164
+Train Epoch: 1 [320/1949 (16%)]	Loss: 3.467974
+Train Epoch: 1 [640/1949 (33%)]	Loss: 3.464832
+Train Epoch: 1 [960/1949 (49%)]	Loss: 3.464750
+Train Epoch: 1 [1280/1949 (66%)]	Loss: 3.461742
+Train Epoch: 1 [1600/1949 (82%)]	Loss: 3.433656
+Train Epoch: 1 [1740/1949 (98%)]	Loss: 3.340954
+/usr/local/lib/python3.7/dist-packages/ipykernel_launcher.py:110: UserWarning: volatile was removed and now has no effect. Use `with torch.no_grad():` instead.
+
+Test set: Average loss: 3.3559, Accuracy: 29/100 (29%)
+
+Train Epoch: 2 [0/1949 (0%)]	Loss: 3.439442
+Train Epoch: 2 [320/1949 (16%)]	Loss: 3.453103
+Train Epoch: 2 [640/1949 (33%)]	Loss: 3.386129
+Train Epoch: 2 [960/1949 (49%)]	Loss: 3.401870
+Train Epoch: 2 [1280/1949 (66%)]	Loss: 3.456865
+Train Epoch: 2 [1600/1949 (82%)]	Loss: 3.416420
+Train Epoch: 2 [1740/1949 (98%)]	Loss: 3.346956
+
+Test set: Average loss: 3.3257, Accuracy: 34/100 (34%)
+
+Train Epoch: 3 [0/1949 (0%)]	Loss: 3.517059
+Train Epoch: 3 [320/1949 (16%)]	Loss: 3.425750
+Train Epoch: 3 [640/1949 (33%)]	Loss: 3.402493
+Train Epoch: 3 [960/1949 (49%)]	Loss: 3.405547
+Train Epoch: 3 [1280/1949 (66%)]	Loss: 3.420150
+Train Epoch: 3 [1600/1949 (82%)]	Loss: 3.377005
+Train Epoch: 3 [1740/1949 (98%)]	Loss: 3.224404
+
+Test set: Average loss: 3.4033, Accuracy: 35/100 (35%)
+
+Train Epoch: 4 [0/1949 (0%)]	Loss: 3.483952
+Train Epoch: 4 [320/1949 (16%)]	Loss: 3.375319
+Train Epoch: 4 [640/1949 (33%)]	Loss: 3.482353
+Train Epoch: 4 [960/1949 (49%)]	Loss: 3.362011
+Train Epoch: 4 [1280/1949 (66%)]	Loss: 3.477455
+Train Epoch: 4 [1600/1949 (82%)]	Loss: 3.354793
+Train Epoch: 4 [1740/1949 (98%)]	Loss: 3.289871
+
+Test set: Average loss: 3.3355, Accuracy: 36/100 (36%)
+
+Train Epoch: 5 [0/1949 (0%)]	Loss: 3.453651
+Train Epoch: 5 [320/1949 (16%)]	Loss: 3.341218
+Train Epoch: 5 [640/1949 (33%)]	Loss: 3.391204
+Train Epoch: 5 [960/1949 (49%)]	Loss: 3.346833
+Train Epoch: 5 [1280/1949 (66%)]	Loss: 3.383742
+Train Epoch: 5 [1600/1949 (82%)]	Loss: 3.408597
+Train Epoch: 5 [1740/1949 (98%)]	Loss: 3.324639
+
+Test set: Average loss: 3.3016, Accuracy: 37/100 (37%)
+
+Train Epoch: 6 [0/1949 (0%)]	Loss: 3.355824
+Train Epoch: 6 [320/1949 (16%)]	Loss: 3.397428
+Train Epoch: 6 [640/1949 (33%)]	Loss: 3.425717
+Train Epoch: 6 [960/1949 (49%)]	Loss: 3.277164
+Train Epoch: 6 [1280/1949 (66%)]	Loss: 3.384890
+Train Epoch: 6 [1600/1949 (82%)]	Loss: 3.425402
+Train Epoch: 6 [1740/1949 (98%)]	Loss: 3.337262
+
+Test set: Average loss: 3.2640, Accuracy: 41/100 (41%)
+
+Train Epoch: 7 [0/1949 (0%)]	Loss: 3.329717
+Train Epoch: 7 [320/1949 (16%)]	Loss: 3.364171
+Train Epoch: 7 [640/1949 (33%)]	Loss: 3.376855
+Train Epoch: 7 [960/1949 (49%)]	Loss: 3.486858
+Train Epoch: 7 [1280/1949 (66%)]	Loss: 3.427505
+Train Epoch: 7 [1600/1949 (82%)]	Loss: 3.592683
+Train Epoch: 7 [1740/1949 (98%)]	Loss: 3.373320
+
+Test set: Average loss: 3.2700, Accuracy: 37/100 (37%)
+
+Train Epoch: 8 [0/1949 (0%)]	Loss: 3.440759
+Train Epoch: 8 [320/1949 (16%)]	Loss: 3.429246
+Train Epoch: 8 [640/1949 (33%)]	Loss: 3.446510
+Train Epoch: 8 [960/1949 (49%)]	Loss: 3.442460
+Train Epoch: 8 [1280/1949 (66%)]	Loss: 3.171880
+Train Epoch: 8 [1600/1949 (82%)]	Loss: 3.372365
+Train Epoch: 8 [1740/1949 (98%)]	Loss: 3.279615
+
+Test set: Average loss: 3.3819, Accuracy: 34/100 (34%)
+
+Train Epoch: 9 [0/1949 (0%)]	Loss: 3.376528
+Train Epoch: 9 [320/1949 (16%)]	Loss: 3.337636
+Train Epoch: 9 [640/1949 (33%)]	Loss: 3.667301
+Train Epoch: 9 [960/1949 (49%)]	Loss: 3.350829
+Train Epoch: 9 [1280/1949 (66%)]	Loss: 3.364783
+Train Epoch: 9 [1600/1949 (82%)]	Loss: 3.353468
+Train Epoch: 9 [1740/1949 (98%)]	Loss: 3.296811
+
+Test set: Average loss: 3.3434, Accuracy: 36/100 (36%)
