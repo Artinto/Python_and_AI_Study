@@ -47,9 +47,9 @@ class Net(nn.Module):
         return x
 
 model = Net()
-img.to(device)
+model.to(device)
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(img.parameters(),lr=0.005,momentum=0.9)\
+optimizer = optim.SGD(model.parameters(),lr=0.005,momentum=0.9)\
 
 for epoch in range(5):
     loss_sum = 0
