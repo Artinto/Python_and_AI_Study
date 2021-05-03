@@ -17,10 +17,10 @@ transforms_train = transforms.Compose([transforms.Resize((128, 128)),
 transforms_test = transforms.Compose([transforms.Resize((128, 128)),
                                       transforms.ToTensor()])
 
-train_data_set = torchvision.datasets.ImageFolder(root = '/content/drive/MyDrive/Kuroko_X_Kagami/train',transform=transforms_train)
+train_data_set = torchvision.datasets.ImageFolder(root = '/content/drive/MyDrive/ramen/train',transform=transforms_train)
 train_loader = DataLoader(train_data_set, batch_size=16, shuffle=True)
 
-test_data_set = torchvision.datasets.ImageFolder(root = '/content/drive/MyDrive/Kuroko_X_Kagami/test',transform=transforms_test)
+test_data_set = torchvision.datasets.ImageFolder(root = '/content/drive/MyDrive/ramen/test',transform=transforms_test)
 test_loader = DataLoader(test_data_set, batch_size=16, shuffle=True)
 
 print(len(trainset), len(testset))
