@@ -1,3 +1,7 @@
+#참고 https://github.com/developer0hye/Custom-CNN-based-Image-Classification-in-PyTorch
+
+
+
 from __future__ import print_function
 import argparse
 import os
