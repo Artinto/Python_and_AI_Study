@@ -3,6 +3,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torch import nn
 from torchvision import transforms
+import torchvision
 import torch
 import numpy as np
 import torch.nn.functional as F
@@ -23,7 +24,7 @@ train_loader = DataLoader(train_data_set, batch_size=16, shuffle=True)
 test_data_set = torchvision.datasets.ImageFolder(root = '/content/drive/MyDrive/ramen/test',transform=transforms_test)
 test_loader = DataLoader(test_data_set, batch_size=16, shuffle=True)
 
-print(len(trainset), len(testset))
+print(len(train_data_set), len(test_data_set))
 
 class Net(nn.Module):
     def __init__(self):
