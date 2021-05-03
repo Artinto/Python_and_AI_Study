@@ -1,4 +1,3 @@
-import os
 from PIL import Image
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -85,12 +84,6 @@ with torch.no_grad():
 print('Accuracy of test images: %d %%' % (100 * correct / total))
 
 #결과
-
-        _, pred1 = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (pred1 == labels).sum().item()
-
-print('Accuracy of test images: %d %%' % (100 * correct / total))
 1949 100
 [1, 1] loss: 0.002
 [1, 51] loss: 0.208
