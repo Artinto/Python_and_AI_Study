@@ -604,6 +604,8 @@
 - **스터디 진행**
    - 12강 발표 & 어려웠던 내용 질문
       - 12강: RNN 1
+        > [12강 발표자료](https://github.com/YoungGaLee/my_repository/files/6452192/RNN.pptx)
+   
    
    - 지난 주차 예제 코드 돌아가면서 설명
    
