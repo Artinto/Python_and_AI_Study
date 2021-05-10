@@ -620,7 +620,7 @@
    - [PyTorchZeroToAll (in English)](https://www.youtube.com/playlist?list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m) 13강 유튜브 강의 시청 (+발표자: 13강 발표 준비)
       > -   13강: [RNN 2](https://www.youtube.com/watch?v=1vGOQAel2yU&list=PLlMkM4tgfjnJ3I-dbhO9JTw7gNty6o_2m&index=13) - 윤나영
    
-   -  예제 코드에 주석 달기 - [*13_1_rnn_classification_basics.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/13_1_rnn_classification_basics.py) , [*12_2_hello_rnn.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/12_2_hello_rnn.py)
+   -  예제 코드에 주석 달기 - [*13_1_rnn_classification_basics.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/13_1_rnn_classification_basics.py) , [*13_2_rnn_classification.py*](https://github.com/hunkim/PyTorchZeroToAll/blob/master/13_2_rnn_classification.py)
 
    <br> 
 
