@@ -655,7 +655,7 @@
     <details>
    <summary><strong>main HW</strong></summary>
 
-   - [실습] 주식데이터를 이용한 RNN 코드 작성
+   - [실습] [주식데이터](https://github.com/deeplearningzerotoall/PyTorch/blob/master/data-02-stock_daily.csv)를 이용한 RNN 코드 작성
       
    </details>
    
