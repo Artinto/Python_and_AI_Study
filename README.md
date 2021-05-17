@@ -647,6 +647,8 @@
 - **스터디 진행**
    - 13강 발표 & 어려웠던 내용 질문
       - 13강: RNN 2
+        > [13강 발표자료](https://github.com/Artinto/Python_and_AI_Study/files/6493879/RNN2.pptx)
+
    
    - 지난 주차 예제 코드 돌아가면서 설명
    
