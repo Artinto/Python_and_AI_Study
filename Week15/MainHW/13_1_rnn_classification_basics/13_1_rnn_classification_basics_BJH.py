@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
-from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence #packing과 unpacking
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence 
 from name_dataset import NameDataset
 
 
