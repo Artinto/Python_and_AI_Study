@@ -14,16 +14,15 @@ df_price = pd.read_csv('/content/drive/MyDrive/reverse.csv',encoding='utf8')   #
 
 scaler = MinMaxScaler()           # 정규화
 scale_cols = ['Open', 'High', 'Low', 'Close', 'Volume']
-df_scaled = scaler.fit_transform(df_price[scale_cols]) #
+df_scaled = scaler.fit_transform(df_price[scale_cols]) #fit 메서드로 데이터의 분포를 추정하고, transform 메서드로 실제 데이터의 스케일을 조정합니다.
 
 df_scaled = pd.DataFrame(df_scaled)
 df_scaled.columns = scale_cols
 
-TEST_SIZE=512
+TEST_SIZE=512 #(70퍼)
 
 train = df_scaled[:TEST_SIZE] #앞에서 512개
 test = df_scaled[TEST_SIZE:]  #앞에서 512개 제외한 나머지
-train.describe()
 
 def make_dataset(data, label, window_size=14):        #14개 씩 묶어서 feature 반환 그 다음 종가를 label로 반환
     feature_list = []
@@ -38,13 +37,12 @@ feature_cols = ['Open', 'High', 'Low', 'Volume'] #feature 은 트레인 데이�
 label_cols = ['Close']                            #label 결과값인 종가
 
 train_feature = train[feature_cols]
-train_label = train[label_cols]
-test_feature = test[feature_cols]
-test_label = test[label_cols]
+train_label = train[label_cols]  #train feature , label로 분류
+test_feature = test[feature_cols] 
+test_label = test[label_cols]   #test feature , label로 분류
 
 # train dataset
-train_feature, train_label = make_dataset(train_feature, train_label, 14)
-
+train_feature, train_label = make_dataset(train_feature, train_label, 14) 
 
 x_train= train_feature
 y_train= train_label
@@ -57,21 +55,22 @@ test_feature, test_label = make_dataset(test_feature, test_label, 14)
 
 # test_feature.shape, test_label.shape
 # ((206, 14, 4), (206, 1)) 
-model = Sequential()  
-model.add(LSTM(20,
+model = Sequential()   #레이어를 선형으로 구성하여 연결시켜준다
+model.add(LSTM(20, 
                input_shape=(14, 4),# (train_feature.shape[1], train_feature.shape[2]) 
                activation=('relu'), 
                return_sequences=False)) 
-model.add(Dense(1)) # output = 1
-model.compile(loss='mean_squared_error', optimizer='adam') 
-early_stop = EarlyStopping(monitor='loss', patience=3,verbose=1)
+model.add(Dense(1)) # 1개의 노드 output = 1
+model.compile(loss='mean_squared_error', optimizer='adam')  #mean_squared_error 평균제곱오차를 계산한다. 입력 간 거리 제곱을 계산한 후 마지막 차원에 대한 평균 값이 반환된다.
+                                                            #Adam( Adaptive Moment Estimation)은  각 파라미터마다 다른 크기의 업데이트를 적용하는 방법이다.            
+early_stop = EarlyStopping(monitor='loss', patience=3,verbose=1) #loss가 3번까지 좋아지지않으면 멈춤
 
 history = model.fit(x_train, y_train, 
                     epochs=200, 
                     batch_size=8,
-                    callbacks=[early_stop])
+                    callbacks=[early_stop])  #학습 시작
 
-pred = model.predict(test_feature)
+pred = model.predict(test_feature) #
 
 plt.figure(figsize=(12, 9))
 plt.plot(test_label, label='actual')
