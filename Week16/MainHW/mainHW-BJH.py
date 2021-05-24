@@ -82,7 +82,7 @@ model = VanillaRNN(input_size=input_size,
 criterion = nn.MSELoss()
 
 lr = 0.001
-num_epochs = 800
+num_epochs = 500
 optimizer = optim.Adam(model.parameters(), lr=lr)
 
 loss_graph = [] # 그래프 그릴 목적인 loss.
@@ -105,6 +105,18 @@ for epoch in range(num_epochs):
   if epoch % 100 == 0:
     print('[epoch: %d] loss: %.4f'%(epoch, running_loss/n))
 
+
+for data in test_loader:
+
+    seq, target = data #train용 변수
+    out = model(seq) #output
+    loss = criterion(out, target)
+
+    optimizer.zero_grad() #
+    loss.backward()
+    optimizer.step()
+    running_loss += loss.item()
+    print('loss: ', (running_loss/n))
 
 #그래프
 def plotting(train_loader, test_loader, actual):
@@ -130,5 +142,6 @@ def plotting(train_loader, test_loader, actual):
 
     plt.legend(['train boundary', 'actual', 'prediction'])
     plt.show()
+
 
 plotting(train_loader, test_loader, stock['Close'][sequence_length:])
