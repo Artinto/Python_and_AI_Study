@@ -58,8 +58,8 @@ test_feature, test_label = make_dataset(test_feature, test_label, 14)
 model = Sequential()   #레이어를 선형으로 구성하여 연결시켜준다
 model.add(LSTM(20, 
                input_shape=(14, 4),# (train_feature.shape[1], train_feature.shape[2]) 
-               activation=('relu'), 
-               return_sequences=False)) 
+               activation=('relu')
+              )) 
 model.add(Dense(1)) # 1개의 노드 output = 1
 model.compile(loss='mean_squared_error', optimizer='adam')  #mean_squared_error 평균제곱오차를 계산한다. 입력 간 거리 제곱을 계산한 후 마지막 차원에 대한 평균 값이 반환된다.
                                                             #Adam( Adaptive Moment Estimation)은  각 파라미터마다 다른 크기의 업데이트를 적용하는 방법이다.            
